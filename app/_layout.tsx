@@ -5,7 +5,7 @@ import {
 	ThemeProvider,
 } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Link, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
@@ -93,7 +93,12 @@ function RootLayoutNav() {
 						),
 					}}
 				/>
-				<Stack.Screen name='details' options={{ title: 'Order #1' }} />
+				<Stack.Screen
+					name='(tabs)'
+					options={{
+						title: 'Order #1',
+					}}
+				/>
 			</Stack>
 		</ThemeProvider>
 	);
