@@ -1,7 +1,7 @@
 import { LineItem } from '@/components/LineItem';
 import { Text, View } from '@/components/Themed';
 import { getOrder } from '@/db/database';
-import { OrderType } from '@/types/order';
+import { OrderType } from '@/types';
 import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 

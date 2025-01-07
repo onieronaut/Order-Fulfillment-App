@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { ItemType } from '@/types/order';
+import { ItemType } from '@/types';
 
 interface LineItemPropsType {
 	item: ItemType;

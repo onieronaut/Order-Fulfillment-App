@@ -1,4 +1,4 @@
-import { OrderType } from '@/types/order';
+import { OrderType } from '@/types';
 import * as SQLite from 'expo-sqlite';
 
 const openDatabase = async () => {
@@ -19,6 +19,11 @@ export const createTable = async () => {
       name TEXT NOT NULL,
       quantity INTEGER NOT NULL,
       orderId INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS boxes (
+      boxId INTEGER PRIMARY KEY NOT NULL,
+      name TEXT NOT NULL
     );
 
     `);
@@ -62,4 +67,12 @@ export const getOrder = async (id: number) => {
 	};
 
 	return payload;
+};
+
+export const getBoxes = async () => {
+	const db = await openDatabase();
+	const boxes = await db.getAllAsync('SELECT * FROM boxes;');
+	console.log('Boxes loaded', boxes);
+
+	return boxes;
 };

@@ -10,3 +10,8 @@ export type ItemType = {
 	name: string;
 	quantity: number;
 };
+
+export type BoxType = {
+	boxId: number;
+	name: string;
+};

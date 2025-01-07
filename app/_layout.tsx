@@ -99,6 +99,13 @@ function RootLayoutNav() {
 						title: 'Order #1',
 					}}
 				/>
+				<Stack.Screen
+					name='createpackage'
+					options={{
+						title: 'Create Package',
+						presentation: 'modal',
+					}}
+				/>
 			</Stack>
 		</ThemeProvider>
 	);
