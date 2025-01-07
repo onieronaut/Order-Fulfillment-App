@@ -9,7 +9,7 @@ export default function DetailsScreen() {
 	const [order, setOrder] = useState<OrderType>();
 
 	useEffect(() => {
-		async function fetchOrder() {
+		async function handleGetOrder() {
 			try {
 				const result = await getOrder(1);
 				setOrder(result);
@@ -19,7 +19,7 @@ export default function DetailsScreen() {
 			}
 		}
 
-		fetchOrder();
+		handleGetOrder();
 	}, []);
 
 	return (
@@ -29,7 +29,7 @@ export default function DetailsScreen() {
 			</View>
 			<FlatList
 				data={order?.items}
-				keyExtractor={(item) => item.itemId}
+				// keyExtractor={(item) => item.}
 				renderItem={({ item }) => <LineItem item={item} />}
 			/>
 		</View>

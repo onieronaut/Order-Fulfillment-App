@@ -106,6 +106,13 @@ function RootLayoutNav() {
 						presentation: 'modal',
 					}}
 				/>
+				<Stack.Screen
+					name='addlineitem'
+					options={{
+						title: 'Add Line Item to Package',
+						presentation: 'modal',
+					}}
+				/>
 			</Stack>
 		</ThemeProvider>
 	);
