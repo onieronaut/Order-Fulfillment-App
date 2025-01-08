@@ -13,7 +13,7 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/components/useColorScheme';
 import { Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { createTable } from '@/db/database';
+import { createTables, dropTables } from '@/db/database';
 import { createOrder } from '@/db/orders/database';
 
 export {
@@ -38,7 +38,7 @@ export default function RootLayout() {
 	useEffect(() => {
 		const prepare = async () => {
 			try {
-				createTable();
+				await createTables();
 			} catch (err) {
 				console.warn(err);
 			}
@@ -111,6 +111,20 @@ function RootLayoutNav() {
 					name='addlineitem'
 					options={{
 						title: 'Add Line Item to Package',
+						presentation: 'modal',
+					}}
+				/>
+				<Stack.Screen
+					name='createshipment'
+					options={{
+						title: 'Create Shipment',
+						presentation: 'modal',
+					}}
+				/>
+				<Stack.Screen
+					name='addpackage'
+					options={{
+						title: 'Add Package to Shipment',
 						presentation: 'modal',
 					}}
 				/>

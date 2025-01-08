@@ -42,3 +42,11 @@ export type PackagedItemType = {
 	name: string;
 	quantity: number;
 };
+
+export type ShipmentType = {
+	shipmentId: number;
+	orderId: number;
+	shippedAt: number;
+	packages: PackageType[];
+	status: 'Pending' | 'Shipped';
+};

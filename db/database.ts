@@ -6,20 +6,22 @@ export const openDatabase = async () => {
 	return await SQLite.openDatabaseAsync('orders.db');
 };
 
-export const createTable = async () => {
+export const createTables = async () => {
 	const db = await openDatabase();
-	await db.execAsync(`
+	await db
+		.execAsync(
+			`
     CREATE TABLE IF NOT EXISTS orders (
       orderId INTEGER PRIMARY KEY NOT NULL,
-      createdAt INTEGER NOT NULL,
+      createdAt INTEGER NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS items (
       itemId INTEGER PRIMARY KEY NOT NULL,
-      orderId INTEGER NOT NULL
+      orderId INTEGER NOT NULL,
       name TEXT NOT NULL,
       quantity INTEGER NOT NULL,
-      quantityPackaged INTEGER NOT NULL
+      quantityPackaged INTEGER NOT NULL,
       status TEXT NOT NULL
     );
 
@@ -44,13 +46,36 @@ export const createTable = async () => {
         orderId INTEGER NOT NULL,
         name TEXT NOT NULL,
         quantity INTEGER NOT NULL
-    )
+    );
 
-    `);
-	// INSERT INTO items (name, quantity, orderId) VALUES ('Graphics Card', 5, 2)
+    CREATE TABLE IF NOT EXISTS shipments (
+        shipmentId INTEGER PRIMARY KEY NOT NULL,
+        status TEXT NOT NULL,
+        shippedAt INTEGER,
+        orderId INTEGER NOT NULL
+    );
+
+
+    `
+		)
+		.catch((err) => console.log(err));
+
+	//    	INSERT INTO items (name, quantity, orderId, quantityPackaged, status) VALUES ('Graphics Card', 5, 1, 0, 'Pending');
+
 	console.log('Database Created');
+};
 
-	await db.execAsync(``);
+export const dropTables = async () => {
+	const db = await openDatabase();
+	await db.execAsync(`
+    DROP TABLE IF EXISTS orders;
+    DROP TABLE IF EXISTS items;
+    DROP TABLE IF EXISTS boxes;
+    DROP TABLE IF EXISTS packages;
+    DROP TABLE IF EXISTS packagedItems;
+    DROP TABLE IF EXISTS shipments;`);
+
+	console.log('Tables deleted');
 };
 
 export const getBoxes = async () => {

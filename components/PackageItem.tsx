@@ -2,7 +2,11 @@ import { Pressable, StyleSheet } from 'react-native';
 import { Text, View } from './Themed';
 import { Link } from 'expo-router';
 import { PackageType } from '@/types';
-import { removeLineItemFromPackage } from '@/db/packages/database';
+import {
+	finishPackage,
+	removeLineItemFromPackage,
+	undoFinishPackage,
+} from '@/db/packages/database';
 import Button from './Button';
 
 interface PackageItemPropsType {
@@ -10,8 +14,6 @@ interface PackageItemPropsType {
 }
 
 export const PackageItem = ({ _package }: PackageItemPropsType) => {
-	console.log(_package);
-
 	async function handleRemoveLineItemFromPackage(packageItemId: number) {
 		console.log(packageItemId);
 
@@ -22,7 +24,46 @@ export const PackageItem = ({ _package }: PackageItemPropsType) => {
 		}
 	}
 
-	async function handleFinishPackage(packageId: number) {}
+	async function handleFinishPackage(packageId: number) {
+		try {
+			await finishPackage(packageId);
+		} catch (err) {
+			console.log(err);
+		}
+	}
+	async function handleUndoFinishPackage(packageId: number) {
+		try {
+			await undoFinishPackage(packageId);
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
+	if (_package.status === 'Packed') {
+		return (
+			<View style={styles.container}>
+				<View style={styles.infoContainer}>
+					<View style={styles.nameContainer}>
+						<Text style={styles.name}>{_package.name}</Text>
+					</View>
+					<View style={styles.statusContainer}>
+						<Text style={styles.status}>Status: {_package.status}</Text>
+					</View>
+					<Button onPress={() => handleUndoFinishPackage(_package.packageId)}>
+						Undo Finish
+					</Button>
+				</View>
+				<View style={styles.lineItemContainer}>
+					{_package.items.map((item) => (
+						<View key={item.packageItemId}>
+							<Text>{item.name}</Text>
+							<Text>{item.quantity}</Text>
+						</View>
+					))}
+				</View>
+			</View>
+		);
+	}
 
 	return (
 		<View style={styles.container}>

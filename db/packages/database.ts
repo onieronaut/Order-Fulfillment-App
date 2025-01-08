@@ -126,3 +126,15 @@ export const finishPackage = async (packageId: number) => {
 	console.log('Package updated', result);
 	return result;
 };
+
+export const undoFinishPackage = async (packageId: number) => {
+	const db = await openDatabase();
+
+	const result = await db.runAsync(
+		'UPDATE packages SET status = "Open" WHERE packageId = ?;',
+		[packageId]
+	);
+
+	console.log('Package updated', result);
+	return result;
+};
