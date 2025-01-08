@@ -1,15 +1,28 @@
 import Button from '@/components/Button';
 import { Text, View } from '@/components/Themed';
-import { addLineItemToPackage, getOrder } from '@/db/database';
+import { getOrder } from '@/db/orders/database';
+import { addLineItemToPackage } from '@/db/packages/database';
 import { OrderType } from '@/types';
 import { Picker } from '@react-native-picker/picker';
+import {
+	useGlobalSearchParams,
+	useLocalSearchParams,
+	useRouter,
+} from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, TextInput } from 'react-native';
 
 export default function AddLineItemModal() {
+	const { orderId, packageId } = useLocalSearchParams<{
+		orderId: string;
+		packageId: string;
+	}>();
+
 	const [order, setOrder] = useState<OrderType>();
 	const [selectedItem, setSelectedItem] = useState();
 	const [number, onChangeNumber] = useState('');
+
+	const router = useRouter();
 
 	async function handleAddLineItemToPackage() {
 		if (!selectedItem) return;
@@ -19,8 +32,8 @@ export default function AddLineItemModal() {
 		);
 
 		const payload = {
-			orderId: 1,
-			packageId: 1,
+			orderId: orderId,
+			packageId: packageId,
 			itemId: item?.itemId,
 			name: item?.name,
 			quantity: number,
@@ -29,6 +42,7 @@ export default function AddLineItemModal() {
 
 		try {
 			const res = await addLineItemToPackage(payload as any);
+			router.dismiss();
 			console.log(res);
 		} catch (err) {
 			console.log(err);
@@ -36,9 +50,11 @@ export default function AddLineItemModal() {
 	}
 
 	useEffect(() => {
+		if (!orderId) return;
+
 		async function handleGetOrder() {
 			try {
-				const result = await getOrder(1);
+				const result = await getOrder(parseInt(orderId));
 				setOrder(result as any);
 			} catch (err) {
 				console.log(err);
@@ -46,7 +62,7 @@ export default function AddLineItemModal() {
 		}
 
 		handleGetOrder();
-	}, []);
+	}, [orderId]);
 
 	return (
 		<View style={styles.container}>

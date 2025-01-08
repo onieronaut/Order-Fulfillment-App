@@ -1,24 +1,32 @@
 import { Pressable, StyleSheet } from 'react-native';
 import { Text, View } from './Themed';
 import { Link } from 'expo-router';
+import { OrderType } from '@/types';
 
-interface OrderItemPropsType {}
+interface OrderItemPropsType {
+	order: OrderType;
+}
 
-export const OrderItem = ({}: OrderItemPropsType) => {
+export const OrderItem = ({ order }: OrderItemPropsType) => {
 	return (
 		<View style={styles.container}>
 			<View style={styles.order}>
-				<Text>Order #1</Text>
+				<Text>Order #{order.orderId}</Text>
 			</View>
 			<View style={styles.items}>
-				<Text>Items: 4</Text>
+				<Text>Items: {order.items.length}</Text>
 			</View>
 			<View style={styles.date}>
 				<Text>Date: 43</Text>
 			</View>
-			<Link href='/details' asChild>
+			<Link
+				href={{
+					pathname: '/(orders)/[orderId]',
+					params: { orderId: order.orderId },
+				}}
+				asChild>
 				<Pressable style={styles.button}>
-					<Text>Go</Text>
+					<Text>View Order</Text>
 				</Pressable>
 			</Link>
 		</View>

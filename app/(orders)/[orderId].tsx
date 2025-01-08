@@ -1,26 +1,30 @@
 import { LineItem } from '@/components/LineItem';
 import { Text, View } from '@/components/Themed';
-import { getOrder } from '@/db/database';
+import { getOrder } from '@/db/orders/database';
 import { OrderType } from '@/types';
+import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 
-export default function DetailsScreen() {
+export default function OrderScreen() {
+	const { orderId } = useLocalSearchParams<{ orderId: string }>();
+
 	const [order, setOrder] = useState<OrderType>();
 
 	useEffect(() => {
+		if (!orderId) return;
+
 		async function handleGetOrder() {
 			try {
-				const result = await getOrder(1);
+				const result = await getOrder(parseInt(orderId));
 				setOrder(result);
-				console.log('order', result);
 			} catch (err) {
 				console.log(err);
 			}
 		}
 
 		handleGetOrder();
-	}, []);
+	}, [orderId]);
 
 	return (
 		<View style={styles.container}>
@@ -29,7 +33,7 @@ export default function DetailsScreen() {
 			</View>
 			<FlatList
 				data={order?.items}
-				// keyExtractor={(item) => item.}
+				keyExtractor={(item) => `${item.itemId}`}
 				renderItem={({ item }) => <LineItem item={item} />}
 			/>
 		</View>

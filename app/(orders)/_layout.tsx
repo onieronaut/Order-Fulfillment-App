@@ -6,7 +6,7 @@ import { Pressable } from 'react-native';
 export default function TabLayout() {
 	return (
 		<Tabs>
-			<Tabs.Screen name='details' options={{ headerShown: false }} />
+			<Tabs.Screen name='[orderId]' options={{ headerShown: false }} />
 			<Tabs.Screen
 				name='packages'
 				options={{

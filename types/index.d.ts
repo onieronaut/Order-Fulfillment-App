@@ -22,7 +22,7 @@ export type PackageType = {
 	orderId: number;
 	name: string;
 	status: 'Packed' | 'Shipped' | 'Open';
-	items: any;
+	items: PackagedItemType[];
 };
 
 export type LineItemType = {
@@ -32,4 +32,13 @@ export type LineItemType = {
 	quantity: number;
 	quantityPackaged: number;
 	status: 'Packed' | 'Shipped' | 'Pending';
+};
+
+export type PackagedItemType = {
+	packageItemId: number;
+	packageId: number;
+	itemId: number;
+	orderId: number;
+	name: string;
+	quantity: number;
 };

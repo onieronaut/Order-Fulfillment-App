@@ -3,8 +3,8 @@ import { FlatList, StyleSheet } from 'react-native';
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
 import { useEffect, useState } from 'react';
-import { getOrders } from '@/db/database';
 import { OrderItem } from '@/components/OrderItem';
+import { getOrders } from '@/db/orders/database';
 
 export default function TabOneScreen() {
 	const [orders, setOrders] = useState<any>([]);
@@ -28,7 +28,7 @@ export default function TabOneScreen() {
 			<FlatList
 				data={orders}
 				keyExtractor={(item) => item.orderId}
-				renderItem={({ item }) => <OrderItem />}
+				renderItem={({ item }) => <OrderItem order={item} />}
 			/>
 		</View>
 	);

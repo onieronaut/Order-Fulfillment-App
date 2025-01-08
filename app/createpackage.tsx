@@ -1,6 +1,7 @@
 import Button from '@/components/Button';
 import { Text, View } from '@/components/Themed';
-import { createPackage, getBoxes } from '@/db/database';
+import { getBoxes } from '@/db/database';
+import { createPackage } from '@/db/packages/database';
 import { BoxType } from '@/types';
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
@@ -52,7 +53,7 @@ export default function CreatePackageModal() {
 				selectedValue={selectedBox}
 				onValueChange={(itemValue, itemIndex) => setSelectedBox(itemValue)}>
 				{boxes?.map((box) => (
-					<Picker.Item label={box?.name} value={box?.boxId} />
+					<Picker.Item key={box?.boxId} label={box?.name} value={box?.boxId} />
 				))}
 			</Picker>
 			<Button onPress={handleCreatePackage}>Create Package</Button>

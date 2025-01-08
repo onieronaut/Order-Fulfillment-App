@@ -13,7 +13,8 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/components/useColorScheme';
 import { Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { createOrder, createTable } from '@/db/database';
+import { createTable } from '@/db/database';
+import { createOrder } from '@/db/orders/database';
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -94,7 +95,7 @@ function RootLayoutNav() {
 					}}
 				/>
 				<Stack.Screen
-					name='(tabs)'
+					name='(orders)'
 					options={{
 						title: 'Order #1',
 					}}
