@@ -30,7 +30,7 @@ export const getOrders = async () => {
 export const createOrder = async () => {
 	const db = await openDatabase();
 	const result = await db.runAsync(
-		'INSERT INTO orders (createdAt) VALUES (1736061294);'
+		'INSERT INTO orders (createdAt, status) VALUES (1736061294, "Pending");'
 	);
 
 	console.log('Order created', result);

@@ -1,21 +1,21 @@
-import Button from '@/components/Button';
-import { Text, View } from '@/components/Themed';
+import { SelectBox } from '@/components/SelectBox';
 import { getBoxes } from '@/db/database';
 import { createPackage } from '@/db/packages/database';
 import { BoxType } from '@/types';
-import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Button, Label, PortalProvider, XStack, YStack } from 'tamagui';
 
 export default function CreatePackageModal() {
 	const [boxes, setBoxes] = useState<BoxType[]>([]);
-	const [selectedBox, setSelectedBox] = useState();
+	const [selectedBox, setSelectedBox] = useState('');
 
 	const router = useRouter();
 
 	async function handleCreatePackage() {
 		if (!selectedBox) return;
+
+		console.log(selectedBox);
 
 		const box = boxes?.find((x) => x.boxId === parseInt(selectedBox));
 
@@ -25,8 +25,10 @@ export default function CreatePackageModal() {
 			name: box?.name,
 		};
 
+		console.log(payload);
+
 		try {
-			await createPackage(payload as any);
+			await createPackage(payload);
 			router.dismiss();
 		} catch (err) {
 			console.log(err);
@@ -47,29 +49,26 @@ export default function CreatePackageModal() {
 	}, []);
 
 	return (
-		<View style={styles.container}>
-			<Text style={styles.boxText}>Box Size</Text>
-			<Picker
-				selectedValue={selectedBox}
-				onValueChange={(itemValue, itemIndex) => setSelectedBox(itemValue)}>
-				{boxes?.map((box) => (
-					<Picker.Item key={box?.boxId} label={box?.name} value={box?.boxId} />
-				))}
-			</Picker>
-			<Button onPress={handleCreatePackage}>Create Package</Button>
-		</View>
+		<PortalProvider>
+			<YStack>
+				<XStack alignItems='center' gap='$4' padding={10}>
+					<Label htmlFor='name'>Box Size</Label>
+					<SelectBox
+						id={'name'}
+						label='Box Sizes'
+						placeholder={'Select box size'}
+						size={'$2'}
+						value={selectedBox}
+						setValue={setSelectedBox}
+						native
+						items={boxes}
+						identifier={'boxId'}
+					/>
+				</XStack>
+				<Button theme='accent' onPress={handleCreatePackage}>
+					Create
+				</Button>
+			</YStack>
+		</PortalProvider>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		marginTop: 24,
-	},
-	boxText: {
-		fontSize: 24,
-		fontWeight: 'bold',
-		color: 'white',
-		textAlign: 'center',
-	},
-});

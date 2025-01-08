@@ -2,6 +2,7 @@ export type OrderType = {
 	orderId: number;
 	createdAt: number;
 	items: LineItemType[];
+	status: 'Pending' | 'Shipped' | 'Packed';
 };
 
 export type ItemType = {
@@ -9,6 +10,8 @@ export type ItemType = {
 	orderId: number;
 	name: string;
 	quantity: number;
+	status: 'Pending' | 'Packed' | 'Shipped';
+	quantityPackaged: number;
 };
 
 export type BoxType = {

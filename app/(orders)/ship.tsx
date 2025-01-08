@@ -1,11 +1,11 @@
 import Button from '@/components/Button';
 import { ShipmentItem } from '@/components/ShipmentItem';
-import { Text, View } from '@/components/Themed';
 import { createShipment, getShipments } from '@/db/shipments/database';
 import { ShipmentType } from '@/types';
 import { Link, useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
+import { Text, View } from 'tamagui';
 
 export default function ShipScreen() {
 	const { orderId } = useGlobalSearchParams<{

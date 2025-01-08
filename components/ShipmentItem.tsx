@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet } from 'react-native';
-import { Text, View } from './Themed';
 import { Link } from 'expo-router';
 import { OrderType, ShipmentType } from '@/types';
+import { Text, View } from 'tamagui';
 
 interface OrderItemPropsType {
 	shipment: ShipmentType;

@@ -1,5 +1,5 @@
-import { Text, View } from '@/components/Themed';
 import { useLocalSearchParams } from 'expo-router';
+import { Text, View } from 'tamagui';
 
 export default function AddPackageModal() {
 	const { orderId, shipmentId } = useLocalSearchParams<{

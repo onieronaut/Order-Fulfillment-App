@@ -10,11 +10,24 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/components/useColorScheme';
-import { Pressable } from 'react-native';
+import { Pressable, useColorScheme } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { createTables, dropTables } from '@/db/database';
 import { createOrder } from '@/db/orders/database';
+// import { createTamagui, createTokens, TamaguiProvider } from 'tamagui';
+import {
+	TamaguiProvider,
+	createTokens,
+	createTamagui,
+	View,
+	Theme,
+} from 'tamagui';
+
+import defaultConfig, { tokens } from '@tamagui/config/v3';
+import tamaguiConfig from '@/tamagui.config';
+
+// import '@tamagui/core/reset.css';
+// import { config } from '@/tamagui.config';
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -28,6 +41,8 @@ export {
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+// const config = createTamagui(defaultConfig);
 
 export default function RootLayout() {
 	const [loaded, error] = useFonts({
@@ -77,58 +92,60 @@ function RootLayoutNav() {
 	}
 
 	return (
-		<ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-			<Stack>
-				<Stack.Screen
-					name='index'
-					options={{
-						title: 'Orders',
-						headerRight: ({ tintColor }) => (
-							<Pressable onPress={handleCreateOrder}>
-								<Ionicons
-									name='add-circle-outline'
-									size={24}
-									color={tintColor}
-								/>
-							</Pressable>
-						),
-					}}
-				/>
-				<Stack.Screen
-					name='(orders)'
-					options={{
-						title: 'Order #1',
-					}}
-				/>
-				<Stack.Screen
-					name='createpackage'
-					options={{
-						title: 'Create Package',
-						presentation: 'modal',
-					}}
-				/>
-				<Stack.Screen
-					name='addlineitem'
-					options={{
-						title: 'Add Line Item to Package',
-						presentation: 'modal',
-					}}
-				/>
-				<Stack.Screen
-					name='createshipment'
-					options={{
-						title: 'Create Shipment',
-						presentation: 'modal',
-					}}
-				/>
-				<Stack.Screen
-					name='addpackage'
-					options={{
-						title: 'Add Package to Shipment',
-						presentation: 'modal',
-					}}
-				/>
-			</Stack>
-		</ThemeProvider>
+		<TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme!}>
+			<ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+				<Stack>
+					<Stack.Screen
+						name='index'
+						options={{
+							title: 'Orders',
+							headerRight: ({ tintColor }) => (
+								<Pressable onPress={handleCreateOrder}>
+									<Ionicons
+										name='add-circle-outline'
+										size={24}
+										color={tintColor}
+									/>
+								</Pressable>
+							),
+						}}
+					/>
+					<Stack.Screen
+						name='(orders)'
+						options={{
+							title: 'Order #1',
+						}}
+					/>
+					<Stack.Screen
+						name='createpackage'
+						options={{
+							title: 'Create Package',
+							presentation: 'modal',
+						}}
+					/>
+					<Stack.Screen
+						name='addlineitem'
+						options={{
+							title: 'Add Line Item to Package',
+							presentation: 'modal',
+						}}
+					/>
+					<Stack.Screen
+						name='createshipment'
+						options={{
+							title: 'Create Shipment',
+							presentation: 'modal',
+						}}
+					/>
+					<Stack.Screen
+						name='addpackage'
+						options={{
+							title: 'Add Package to Shipment',
+							presentation: 'modal',
+						}}
+					/>
+				</Stack>
+			</ThemeProvider>
+		</TamaguiProvider>
 	);
 }

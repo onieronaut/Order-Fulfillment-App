@@ -1,5 +1,4 @@
 import { Pressable, StyleSheet } from 'react-native';
-import { Text, View } from './Themed';
 import { Link } from 'expo-router';
 import { PackageType } from '@/types';
 import {
@@ -8,6 +7,16 @@ import {
 	undoFinishPackage,
 } from '@/db/packages/database';
 import Button from './Button';
+import {
+	Card,
+	H3,
+	Paragraph,
+	SizableText,
+	Text,
+	View,
+	XStack,
+	YStack,
+} from 'tamagui';
 
 interface PackageItemPropsType {
 	_package: PackageType;
@@ -66,46 +75,57 @@ export const PackageItem = ({ _package }: PackageItemPropsType) => {
 	}
 
 	return (
-		<View style={styles.container}>
-			<View style={styles.infoContainer}>
-				<View style={styles.nameContainer}>
-					<Text style={styles.name}>{_package.name}</Text>
-				</View>
-				<View style={styles.statusContainer}>
-					<Text style={styles.status}>Status: {_package.status}</Text>
-				</View>
-				<Link
-					href={{
-						pathname: '/addlineitem',
-						params: {
-							orderId: _package.orderId,
-							packageId: _package.packageId,
-						},
-					}}
-					asChild>
-					<Pressable style={styles.buttonContainer}>
-						<Text>Add Item</Text>
-					</Pressable>
-				</Link>
-				<Button onPress={() => handleFinishPackage(_package.packageId)}>
-					Finish
-				</Button>
-			</View>
-			<View style={styles.lineItemContainer}>
-				{_package.items.map((item) => (
-					<View key={item.packageItemId}>
-						<Text>{item.name}</Text>
-						<Text>{item.quantity}</Text>
-						<Pressable
-							onPress={() =>
-								handleRemoveLineItemFromPackage(item.packageItemId)
-							}>
-							<Text>Remove</Text>
-						</Pressable>
-					</View>
-				))}
-			</View>
-		</View>
+		<Card size='$5'>
+			<Card.Header>
+				<H3>{_package.name}</H3>
+				<Paragraph theme='alt2'>#{_package.packageId}</Paragraph>
+			</Card.Header>
+			<Card.Footer padded>
+				<XStack flex={1} justifyContent='center'>
+					<SizableText size='$4'>Status: {_package?.status}</SizableText>
+				</XStack>
+			</Card.Footer>
+		</Card>
+		// <View style={styles.container}>
+		// 	<View style={styles.infoContainer}>
+		// 		<View style={styles.nameContainer}>
+		// 			<Text style={styles.name}>{_package.name}</Text>
+		// 		</View>
+		// 		<View style={styles.statusContainer}>
+		// 			<Text style={styles.status}>Status: {_package.status}</Text>
+		// 		</View>
+		// 		<Link
+		// 			href={{
+		// 				pathname: '/addlineitem',
+		// 				params: {
+		// 					orderId: _package.orderId,
+		// 					packageId: _package.packageId,
+		// 				},
+		// 			}}
+		// 			asChild>
+		// 			<Pressable style={styles.buttonContainer}>
+		// 				<Text>Add Item</Text>
+		// 			</Pressable>
+		// 		</Link>
+		// 		<Button onPress={() => handleFinishPackage(_package.packageId)}>
+		// 			Finish
+		// 		</Button>
+		// 	</View>
+		// 	<View style={styles.lineItemContainer}>
+		// 		{_package.items.map((item) => (
+		// 			<View key={item.packageItemId}>
+		// 				<Text>{item.name}</Text>
+		// 				<Text>{item.quantity}</Text>
+		// 				<Pressable
+		// 					onPress={() =>
+		// 						handleRemoveLineItemFromPackage(item.packageItemId)
+		// 					}>
+		// 					<Text>Remove</Text>
+		// 				</Pressable>
+		// 			</View>
+		// 		))}
+		// 	</View>
+		// </View>
 	);
 };
 

@@ -1,10 +1,10 @@
 import { LineItem } from '@/components/LineItem';
-import { Text, View } from '@/components/Themed';
 import { getOrder } from '@/db/orders/database';
 import { OrderType } from '@/types';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
+import { Text, View, YStack } from 'tamagui';
 
 export default function OrderScreen() {
 	const { orderId } = useLocalSearchParams<{ orderId: string }>();
@@ -27,16 +27,17 @@ export default function OrderScreen() {
 	}, [orderId]);
 
 	return (
-		<View style={styles.container}>
-			<View style={styles.headerContainer}>
-				<Text style={styles.header}>Line Items</Text>
-			</View>
+		<YStack flex={1} padding={10}>
 			<FlatList
 				data={order?.items}
 				keyExtractor={(item) => `${item.itemId}`}
-				renderItem={({ item }) => <LineItem item={item} />}
+				renderItem={({ item }) => (
+					<YStack padding={5}>
+						<LineItem item={item} />
+					</YStack>
+				)}
 			/>
-		</View>
+		</YStack>
 	);
 }
 

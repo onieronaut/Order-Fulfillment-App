@@ -1,42 +1,44 @@
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList } from 'react-native';
 
-import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
-import { useEffect, useState } from 'react';
 import { OrderItem } from '@/components/OrderItem';
 import { getOrders } from '@/db/orders/database';
+import { OrderType } from '@/types';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
+import { YStack } from 'tamagui';
 
-export default function TabOneScreen() {
-	const [orders, setOrders] = useState<any>([]);
+export default function OrdersScreen() {
+	const [orders, setOrders] = useState<OrderType[]>([]);
 
-	useEffect(() => {
-		async function fetchOrders() {
-			try {
-				const result = await getOrders();
-				setOrders(result);
-				console.log('orders', result);
-			} catch (err) {
-				console.log(err);
+	useFocusEffect(
+		useCallback(() => {
+			async function fetchOrders() {
+				try {
+					const result = await getOrders();
+					setOrders(result);
+					console.log('orders', result);
+				} catch (err) {
+					console.log(err);
+				}
 			}
-		}
 
-		fetchOrders();
-	}, []);
+			fetchOrders();
+
+			return () => {};
+		}, [])
+	);
 
 	return (
-		<View style={styles.container}>
+		<YStack flex={1} padding={10}>
 			<FlatList
 				data={orders}
-				keyExtractor={(item) => item.orderId}
-				renderItem={({ item }) => <OrderItem order={item} />}
+				keyExtractor={(item) => item.orderId.toString()}
+				renderItem={({ item }) => (
+					<YStack padding={5}>
+						<OrderItem order={item} />
+					</YStack>
+				)}
 			/>
-		</View>
+		</YStack>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		margin: 8,
-	},
-});

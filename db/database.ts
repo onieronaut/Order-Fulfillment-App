@@ -13,7 +13,8 @@ export const createTables = async () => {
 			`
     CREATE TABLE IF NOT EXISTS orders (
       orderId INTEGER PRIMARY KEY NOT NULL,
-      createdAt INTEGER NOT NULL
+      createdAt INTEGER NOT NULL,
+      status TEXT NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS items (
@@ -54,7 +55,6 @@ export const createTables = async () => {
         shippedAt INTEGER,
         orderId INTEGER NOT NULL
     );
-
 
     `
 		)
