@@ -56,6 +56,13 @@ export const createTables = async () => {
         orderId INTEGER NOT NULL
     );
 
+       CREATE TABLE IF NOT EXISTS shipmentPackages (
+        shipmentPackageId INTEGER PRIMARY KEY NOT NULL,
+        shipmentId INTEGER NOT NULL,
+        packageId INTEGER NOT NULL,
+        orderId INTEGER NOT NULL
+    );
+
     `
 		)
 		.catch((err) => console.log(err));

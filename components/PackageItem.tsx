@@ -155,22 +155,24 @@ export const PackageItem = ({ _package, index }: PackageItemPropsType) => {
 											<SizableText>{item.name}</SizableText>
 											<SizableText>Quantity: {item.quantity}</SizableText>
 										</XStack>
-										<XStack>
-											<Button
-												onPress={() =>
-													handleRemoveLineItemFromPackage(item.packageItemId)
-												}
-												size='$2'
-												icon={
-													<Entypo
-														name='circle-with-cross'
-														size={12}
-														color='white'
-													/>
-												}>
-												Remove
-											</Button>
-										</XStack>
+										{_package.status === 'Open' && (
+											<XStack>
+												<Button
+													onPress={() =>
+														handleRemoveLineItemFromPackage(item.packageItemId)
+													}
+													size='$2'
+													icon={
+														<Entypo
+															name='circle-with-cross'
+															size={12}
+															color='white'
+														/>
+													}>
+													Remove
+												</Button>
+											</XStack>
+										)}
 									</XStack>
 								))}
 							</YStack>

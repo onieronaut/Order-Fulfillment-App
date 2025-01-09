@@ -1,6 +1,7 @@
-import { Pressable, StyleSheet } from 'react-native';
-import { Link } from 'expo-router';
-import { OrderType, ShipmentType } from '@/types';
+import { ShipmentType } from '@/types';
+import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
+import { ChevronDown } from '@tamagui/lucide-icons';
+import React, { useState } from 'react';
 import {
 	Accordion,
 	Button,
@@ -9,16 +10,13 @@ import {
 	Paragraph,
 	SizableText,
 	Square,
-	Text,
-	View,
 	XStack,
 	YGroup,
 	YStack,
 } from 'tamagui';
-import { ChevronDown } from '@tamagui/lucide-icons';
-import React from 'react';
-import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
-import { SheetModal } from './ui/SheetModal';
+import { AddPackagesToShipment } from './AddPackagesToShipment';
+import { deleteShipment, shipShipment } from '@/db/shipments/database';
+import dayjs from 'dayjs';
 
 interface OrderItemPropsType {
 	shipment: ShipmentType;
@@ -26,36 +24,48 @@ interface OrderItemPropsType {
 }
 
 export const ShipmentItem = ({ shipment, index }: OrderItemPropsType) => {
+	const [open, setOpen] = useState(false);
+
+	async function handleDeleteShipment() {
+		try {
+			await deleteShipment(shipment.shipmentId);
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
+	async function handleShipShipment() {
+		try {
+			await shipShipment(shipment.shipmentId);
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
 	const PendingShipmentButtons = () => {
 		return (
 			<YGroup flex={1}>
 				<YGroup.Item>
 					<Button
+						onPress={handleDeleteShipment}
 						theme='accent'
 						icon={<Entypo name='circle-with-cross' size={16} color='white' />}>
 						Delete
 					</Button>
 				</YGroup.Item>
-				{/* <Link
-					href={{
-						pathname: '/addlineitem',
-						params: {
-							orderId: _package.orderId,
-							packageId: _package.packageId,
-						},
-					}}
-					asChild> */}
-				{/* <YGroup.Item> */}
-				<SheetModal
-				// name={'Add Package'}
-				// theme='accent'
-				// icon={<Entypo name='circle-with-cross' size={16} color='white' />}
-				/>
-				{/* </YGroup.Item> */}
-				{/* </Link> */}
 				<YGroup.Item>
 					<Button
-						// onPress={() => handleFinishPackage(_package.packageId)}
+						theme='accent'
+						icon={<Entypo name='circle-with-plus' size={16} color='white' />}
+						onPress={() => {
+							setOpen(true);
+						}}>
+						Add Packages
+					</Button>
+				</YGroup.Item>
+				<YGroup.Item>
+					<Button
+						onPress={handleShipShipment}
 						theme='accent'
 						icon={
 							<MaterialCommunityIcons
@@ -64,7 +74,7 @@ export const ShipmentItem = ({ shipment, index }: OrderItemPropsType) => {
 								color='white'
 							/>
 						}>
-						Finish
+						Ship
 					</Button>
 				</YGroup.Item>
 			</YGroup>
@@ -73,22 +83,32 @@ export const ShipmentItem = ({ shipment, index }: OrderItemPropsType) => {
 
 	return (
 		<Card size='$5'>
+			<AddPackagesToShipment
+				shipment={shipment}
+				open={open}
+				setOpen={setOpen}
+			/>
 			<YStack flex={1}>
-				<SheetModal
-				// theme='accent'
-				// icon={<Entypo name='circle-with-cross' size={16} color='white' />}
-				/>
 				<XStack>
 					<XStack flex={1}>
 						<Card.Header>
 							<H3>Shipment #{index + 1}</H3>
 							<SizableText size='$4'>Status: {shipment?.status}</SizableText>
+							{shipment.status === 'Shipped' && (
+								<SizableText size='$4'>
+									Shipped At:{' '}
+									{dayjs(shipment?.shippedAt).format('MM/DD/YY @ hh:mm A')}
+								</SizableText>
+							)}
 						</Card.Header>
 					</XStack>
-					<XStack flex={1} justifyContent='center'>
-						{shipment.status === 'Pending' && <PendingShipmentButtons />}
-						{/* {_package.status === 'Packed' && <PackedPackageButtons />} */}
-					</XStack>
+					{shipment.status === 'Pending' && (
+						<XStack flex={1} justifyContent='center'>
+							<PendingShipmentButtons />
+
+							{/* {_package.status === 'Packed' && <PackedPackageButtons />} */}
+						</XStack>
+					)}
 				</XStack>
 			</YStack>
 			<Accordion

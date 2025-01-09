@@ -1,11 +1,11 @@
+import { AddPackagesToShipment } from '@/components/AddPackagesToShipment';
 import { ShipmentItem } from '@/components/ShipmentItem';
-import { SheetModal } from '@/components/ui/SheetModal';
 import { createShipment, getShipments } from '@/db/shipments/database';
 import { ShipmentType } from '@/types';
-import { Link, useFocusEffect, useGlobalSearchParams } from 'expo-router';
+import { useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
-import { Button, Text, View, YStack } from 'tamagui';
+import { FlatList } from 'react-native';
+import { Button, YStack } from 'tamagui';
 
 export default function ShipScreen() {
 	const { orderId } = useGlobalSearchParams<{
@@ -47,6 +47,7 @@ export default function ShipScreen() {
 			<Button margin={5} theme='accent' onPress={handleCreateShipment}>
 				Create Shipment
 			</Button>
+			{/* <AddPackagesToShipment shipment={shipments[0]} /> */}
 			<FlatList
 				data={shipments}
 				keyExtractor={(item) => item.shipmentId.toString()}

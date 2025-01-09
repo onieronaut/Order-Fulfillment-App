@@ -13,7 +13,7 @@ export const getPackages = async (orderId: number) => {
 		[orderId]
 	);
 
-	const payload = packages.map((_package) => {
+	const payload: PackageType[] = packages.map((_package) => {
 		const arr: any = [];
 		packagedItems.map((item) => {
 			if (item.packageId === _package.packageId) {

@@ -21,6 +21,7 @@
     "@tamagui/config": "^1.121.7",
     "@tamagui/lucide-icons": "^1.121.7",
     "@tamagui/portal": "^1.121.7",
+    "dayjs": "^1.11.13",
     "expo": "~52.0.23",
     "expo-font": "~13.0.2",
     "expo-linear-gradient": "~14.0.1",

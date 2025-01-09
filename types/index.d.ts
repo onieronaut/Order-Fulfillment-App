@@ -53,3 +53,10 @@ export type ShipmentType = {
 	packages: PackageType[];
 	status: 'Pending' | 'Shipped';
 };
+
+export type ShipmentPackageType = {
+	shipmentPackageId: number;
+	shipmentId: number;
+	orderId: number;
+	packageId: number;
+};
