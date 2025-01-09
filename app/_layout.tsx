@@ -21,6 +21,7 @@ import {
 	createTamagui,
 	View,
 	Theme,
+	PortalProvider,
 } from 'tamagui';
 
 import defaultConfig, { tokens } from '@tamagui/config/v3';
@@ -94,57 +95,52 @@ function RootLayoutNav() {
 	return (
 		<TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme!}>
 			<ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-				<Stack>
-					<Stack.Screen
-						name='index'
-						options={{
-							title: 'Orders',
-							headerRight: ({ tintColor }) => (
-								<Pressable onPress={handleCreateOrder}>
-									<Ionicons
-										name='add-circle-outline'
-										size={24}
-										color={tintColor}
-									/>
-								</Pressable>
-							),
-						}}
-					/>
-					<Stack.Screen
-						name='(orders)'
-						options={{
-							title: 'Order #1',
-						}}
-					/>
-					<Stack.Screen
-						name='createpackage'
-						options={{
-							title: 'Create Package',
-							presentation: 'modal',
-						}}
-					/>
-					<Stack.Screen
-						name='addlineitem'
-						options={{
-							title: 'Add Line Item to Package',
-							presentation: 'modal',
-						}}
-					/>
-					<Stack.Screen
-						name='createshipment'
-						options={{
-							title: 'Create Shipment',
-							presentation: 'modal',
-						}}
-					/>
-					<Stack.Screen
-						name='addpackage'
-						options={{
-							title: 'Add Package to Shipment',
-							presentation: 'modal',
-						}}
-					/>
-				</Stack>
+				<PortalProvider shouldAddRootHost>
+					<Stack>
+						<Stack.Screen
+							name='index'
+							options={{
+								title: 'Orders',
+								headerRight: ({ tintColor }) => (
+									<Pressable onPress={handleCreateOrder}>
+										<Ionicons
+											name='add-circle-outline'
+											size={24}
+											color={tintColor}
+										/>
+									</Pressable>
+								),
+							}}
+						/>
+						<Stack.Screen
+							name='(orders)'
+							options={{
+								title: 'Order #1',
+							}}
+						/>
+						<Stack.Screen
+							name='createpackage'
+							options={{
+								title: 'Create Package',
+								presentation: 'modal',
+							}}
+						/>
+						<Stack.Screen
+							name='addlineitem'
+							options={{
+								title: 'Add Line Item to Package',
+								presentation: 'modal',
+							}}
+						/>
+						<Stack.Screen
+							name='createshipment'
+							options={{
+								title: 'Create Shipment',
+								presentation: 'modal',
+							}}
+						/>
+					</Stack>
+				</PortalProvider>
 			</ThemeProvider>
 		</TamaguiProvider>
 	);

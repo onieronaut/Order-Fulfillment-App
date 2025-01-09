@@ -3,8 +3,8 @@ import { getPackages } from '@/db/packages/database';
 import { PackageType } from '@/types';
 import { Link, useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
-import { Button, View, YStack } from 'tamagui';
+import { FlatList } from 'react-native';
+import { Button, YStack } from 'tamagui';
 
 export default function PackagesScreen() {
 	const { orderId } = useGlobalSearchParams<{ orderId: string }>();
@@ -39,30 +39,12 @@ export default function PackagesScreen() {
 			<FlatList
 				data={packages}
 				keyExtractor={(item) => `${item.packageId}`}
-				renderItem={({ item }) => (
+				renderItem={({ item, index }) => (
 					<YStack padding={5}>
-						<PackageItem _package={item} />
+						<PackageItem _package={item} index={index} />
 					</YStack>
 				)}
 			/>
 		</YStack>
-		// <View style={styles.container}>
-		// 	<Link href={{ pathname: '/createpackage' }} asChild>
-		// 		<Button>Create Package</Button>
-		// 	</Link>
-		// 	<View>
-		// 		<FlatList
-		// 			data={packages}
-		// 			keyExtractor={(item) => item.packageId.toString()}
-		// 			renderItem={({ item }) => <PackageItem _package={item} />}
-		// 		/>
-		// 	</View>
-		// </View>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-	},
-});

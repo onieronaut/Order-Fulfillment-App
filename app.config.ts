@@ -7,6 +7,7 @@ module.exports = {
 	scheme: 'myapp',
 	userInterfaceStyle: 'automatic',
 	newArchEnabled: true,
+	jsEngine: 'hermes',
 	splash: {
 		image: './assets/images/splash-icon.png',
 		resizeMode: 'contain',
@@ -14,6 +15,7 @@ module.exports = {
 	},
 	ios: {
 		supportsTablet: true,
+		jsEngine: 'jsc',
 	},
 	android: {
 		adaptiveIcon: {

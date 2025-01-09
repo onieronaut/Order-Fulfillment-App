@@ -29,9 +29,10 @@ export default function TabLayout() {
 				}}
 			/>
 			<Tabs.Screen
-				name='ship'
+				name='shipments'
 				options={{
 					headerShown: false,
+					title: 'Shipments',
 					tabBarIcon: ({ size, color }) => (
 						<MaterialIcons name='local-shipping' size={size} color={color} />
 					),

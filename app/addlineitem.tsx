@@ -1,4 +1,3 @@
-import Button from '@/components/Button';
 import { getOrder } from '@/db/orders/database';
 import { addLineItemToPackage } from '@/db/packages/database';
 import { OrderType } from '@/types';
@@ -10,7 +9,7 @@ import {
 } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, TextInput } from 'react-native';
-import { Text, View } from 'tamagui';
+import { Button, Text, View } from 'tamagui';
 
 export default function AddLineItemModal() {
 	const { orderId, packageId } = useLocalSearchParams<{

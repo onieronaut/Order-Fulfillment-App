@@ -1,4 +1,4 @@
-import { SelectBox } from '@/components/SelectBox';
+import { SelectBox } from '@/components/ui/SelectBox';
 import { getBoxes } from '@/db/database';
 import { createPackage } from '@/db/packages/database';
 import { BoxType } from '@/types';

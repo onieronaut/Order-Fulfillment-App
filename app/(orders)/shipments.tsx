@@ -1,11 +1,11 @@
-import Button from '@/components/Button';
 import { ShipmentItem } from '@/components/ShipmentItem';
+import { SheetModal } from '@/components/ui/SheetModal';
 import { createShipment, getShipments } from '@/db/shipments/database';
 import { ShipmentType } from '@/types';
 import { Link, useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
-import { Text, View } from 'tamagui';
+import { Button, Text, View, YStack } from 'tamagui';
 
 export default function ShipScreen() {
 	const { orderId } = useGlobalSearchParams<{
@@ -43,28 +43,19 @@ export default function ShipScreen() {
 	console.log(shipments);
 
 	return (
-		<View style={styles.container}>
-			<Text style={styles.header}>Shipments</Text>
-			{/* <Link href={{ pathname: '/createshipment' }} asChild> */}
-			<Button onPress={handleCreateShipment}>Create Shipment</Button>
-			{/* </Link> */}
+		<YStack flex={1} padding={10}>
+			<Button margin={5} theme='accent' onPress={handleCreateShipment}>
+				Create Shipment
+			</Button>
 			<FlatList
 				data={shipments}
 				keyExtractor={(item) => item.shipmentId.toString()}
-				renderItem={({ item }) => <ShipmentItem shipment={item} />}
+				renderItem={({ item, index }) => (
+					<YStack padding={5}>
+						<ShipmentItem shipment={item} index={index} />
+					</YStack>
+				)}
 			/>
-		</View>
+		</YStack>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-	},
-	header: {
-		textAlign: 'center',
-		fontSize: 24,
-		fontWeight: 'bold',
-		color: 'white',
-	},
-});
