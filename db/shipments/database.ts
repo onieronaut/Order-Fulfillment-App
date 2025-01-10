@@ -88,7 +88,8 @@ export const deleteShipment = async (shipmentId: number) => {
 	console.log('Shipment deleted');
 };
 
-export const shipShipment = async (shipmentId: number) => {
+export const shipShipment = async (shipment: ShipmentType) => {
+	const { shipmentId, packages } = shipment;
 	const date = dayjs().unix() * 1000;
 
 	const db = await openDatabase();
@@ -97,5 +98,28 @@ export const shipShipment = async (shipmentId: number) => {
 		[date, shipmentId]
 	);
 
+	for (const _package of packages) {
+		await db.runAsync(
+			'UPDATE packages SET status = "Shipped" WHERE packageId = ?;',
+			[_package.packageId]
+		);
+
+		for (const item of _package.items) {
+			await db.runAsync(
+				'UPDATE items SET status = "Shipped" WHERE itemId = ?;',
+				[item.itemId]
+			);
+		}
+	}
+
 	console.log('Shipment shipped');
+};
+
+export const removePackageFromShipment = async (packageId: number) => {
+	const db = await openDatabase();
+	await db.runAsync('DELETE FROM shipmentPackages WHERE packageId = ?;', [
+		packageId,
+	]);
+
+	console.log('Packaged removed from shipment');
 };

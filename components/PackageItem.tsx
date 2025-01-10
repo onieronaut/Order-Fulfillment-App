@@ -30,8 +30,6 @@ interface PackageItemPropsType {
 
 export const PackageItem = ({ _package, index }: PackageItemPropsType) => {
 	async function handleRemoveLineItemFromPackage(packageItemId: number) {
-		console.log(packageItemId);
-
 		try {
 			await removeLineItemFromPackage(packageItemId);
 		} catch (err) {
@@ -153,7 +151,9 @@ export const PackageItem = ({ _package, index }: PackageItemPropsType) => {
 									<XStack key={item.packageItemId} alignItems='center'>
 										<XStack gap={'$3'} flex={1}>
 											<SizableText>{item.name}</SizableText>
-											<SizableText>Quantity: {item.quantity}</SizableText>
+											<SizableText>
+												Quantity: {item.quantityPackaged}
+											</SizableText>
 										</XStack>
 										{_package.status === 'Open' && (
 											<XStack>

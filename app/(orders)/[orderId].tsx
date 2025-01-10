@@ -4,7 +4,7 @@ import { OrderType } from '@/types';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
-import { Text, View, YStack } from 'tamagui';
+import { YStack } from 'tamagui';
 
 export default function OrderScreen() {
 	const { orderId } = useLocalSearchParams<{ orderId: string }>();
@@ -40,19 +40,3 @@ export default function OrderScreen() {
 		</YStack>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		marginVertical: 8,
-	},
-	headerContainer: {
-		marginVertical: 8,
-	},
-	header: {
-		textAlign: 'center',
-		fontSize: 24,
-		fontWeight: 'bold',
-		color: 'white',
-	},
-});

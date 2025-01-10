@@ -40,8 +40,6 @@ export default function ShipScreen() {
 		}, [orderId])
 	);
 
-	console.log(shipments);
-
 	return (
 		<YStack flex={1} padding={10}>
 			<Button margin={5} theme='accent' onPress={handleCreateShipment}>

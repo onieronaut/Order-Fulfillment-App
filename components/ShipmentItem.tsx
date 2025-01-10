@@ -15,7 +15,11 @@ import {
 	YStack,
 } from 'tamagui';
 import { AddPackagesToShipment } from './AddPackagesToShipment';
-import { deleteShipment, shipShipment } from '@/db/shipments/database';
+import {
+	deleteShipment,
+	removePackageFromShipment,
+	shipShipment,
+} from '@/db/shipments/database';
 import dayjs from 'dayjs';
 
 interface OrderItemPropsType {
@@ -36,7 +40,15 @@ export const ShipmentItem = ({ shipment, index }: OrderItemPropsType) => {
 
 	async function handleShipShipment() {
 		try {
-			await shipShipment(shipment.shipmentId);
+			await shipShipment(shipment);
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
+	async function handleRemovePackageFromShipment(packageId: number) {
+		try {
+			await removePackageFromShipment(packageId);
 		} catch (err) {
 			console.log(err);
 		}
@@ -144,22 +156,24 @@ export const ShipmentItem = ({ shipment, index }: OrderItemPropsType) => {
 												Items: {_package?.items.length || 0}
 											</SizableText>
 										</XStack>
-										<XStack>
-											<Button
-												// onPress={() =>
-												// 	handleRemoveLineItemFromPackage(item.packageItemId)
-												// }
-												size='$2'
-												icon={
-													<Entypo
-														name='circle-with-cross'
-														size={12}
-														color='white'
-													/>
-												}>
-												Remove
-											</Button>
-										</XStack>
+										{shipment?.status === 'Pending' && (
+											<XStack>
+												<Button
+													onPress={() =>
+														handleRemovePackageFromShipment(_package.packageId)
+													}
+													size='$2'
+													icon={
+														<Entypo
+															name='circle-with-cross'
+															size={12}
+															color='white'
+														/>
+													}>
+													Remove
+												</Button>
+											</XStack>
+										)}
 									</XStack>
 								))}
 							</YStack>
@@ -168,39 +182,5 @@ export const ShipmentItem = ({ shipment, index }: OrderItemPropsType) => {
 				</Accordion.Item>
 			</Accordion>
 		</Card>
-		// <View style={styles.container}>
-		// 	<View style={styles.order}>
-		// 		<Text>Shipment #{shipment.shipmentId}</Text>
-		// 	</View>
-		// 	<View style={styles.items}>
-		// 		<Text>Packages: {shipment?.packages?.length}</Text>
-		// 	</View>
-		// 	<View style={styles.date}>
-		// 		<Text>Status: {shipment.status}</Text>
-		// 	</View>
-		// 	<Link
-		// 		href={{
-		// 			pathname: '/addpackage',
-		// 			params: {
-		// 				orderId: shipment.orderId,
-		// 				shipmentId: shipment.shipmentId,
-		// 			},
-		// 		}}
-		// 		asChild>
-		// 		<Pressable style={styles.buttonContainer}>
-		// 			<Text>Add Item</Text>
-		// 		</Pressable>
-		// 	</Link>
-		/* <Link
-                href={{
-                    pathname: '/(orders)/[orderId]',
-                    params: { orderId: order.orderId },
-                }}
-                asChild>
-                <Pressable style={styles.button}>
-                    <Text>View Order</Text>
-                </Pressable>
-            </Link> */
-		// </View>
 	);
 };

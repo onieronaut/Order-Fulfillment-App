@@ -63,10 +63,18 @@ export const createTables = async () => {
         orderId INTEGER NOT NULL
     );
 
+
     `
 		)
 		.catch((err) => console.log(err));
 
+	//    UPDATE items SET quantityPackaged = 0 WHERE itemId = 3;
+
+	// INSERT INTO boxes (name) VALUES ('Small Box');
+	// INSERT INTO boxes (name) VALUES ('Medium Box');
+	// INSERT INTO boxes (name) VALUES ('Large Box');
+
+	// INSERT INTO orders (createdAt, status) VALUES ('123456789','Pending');
 	//    	INSERT INTO items (name, quantity, orderId, quantityPackaged, status) VALUES ('Graphics Card', 5, 1, 0, 'Pending');
 
 	console.log('Database Created');
@@ -88,43 +96,8 @@ export const dropTables = async () => {
 export const getBoxes = async () => {
 	const db = await openDatabase();
 	const boxes: BoxType[] = await db.getAllAsync('SELECT * FROM boxes;');
+
 	console.log('Boxes loaded', boxes);
 
 	return boxes;
-};
-
-export const getItem = async (itemId: number) => {
-	const db = await openDatabase();
-	const item: any = await db.getFirstAsync(
-		'SELECT * FROM items WHERE item = ?;',
-		[itemId]
-	);
-
-	const payload: LineItemType = item;
-
-	return payload;
-};
-
-export const updateItemQuantityPackaged = async (
-	itemId: number,
-	quantityPackaged: number
-) => {
-	const db = await openDatabase();
-
-	const item = await getItem(itemId);
-	const newQuantityPackaged = item.quantityPackaged + quantityPackaged;
-
-	const result = await db.runAsync(
-		'UPDATE items SET quantityPackaged = ? WHERE id = ?;',
-		[newQuantityPackaged, itemId]
-	);
-
-	if (newQuantityPackaged === item.quantity) {
-		await db.runAsync('UPDATE items SET status = "Packed" WHERE id = ?;', [
-			itemId,
-		]);
-	}
-
-	console.log('Item updated');
-	return;
 };

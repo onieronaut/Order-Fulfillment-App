@@ -55,6 +55,7 @@ export default function RootLayout() {
 		const prepare = async () => {
 			try {
 				await createTables();
+				// await dropTables();
 			} catch (err) {
 				console.warn(err);
 			}

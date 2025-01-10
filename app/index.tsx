@@ -16,7 +16,6 @@ export default function OrdersScreen() {
 				try {
 					const result = await getOrders();
 					setOrders(result);
-					console.log('orders', result);
 				} catch (err) {
 					console.log(err);
 				}

@@ -37,12 +37,10 @@ export default function AddLineItemModal() {
 			name: item?.name,
 			quantity: number,
 		};
-		console.log(payload);
 
 		try {
 			const res = await addLineItemToPackage(payload as any);
 			router.dismiss();
-			console.log(res);
 		} catch (err) {
 			console.log(err);
 		}

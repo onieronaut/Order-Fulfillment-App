@@ -15,8 +15,6 @@ export default function CreatePackageModal() {
 	async function handleCreatePackage() {
 		if (!selectedBox) return;
 
-		console.log(selectedBox);
-
 		const box = boxes?.find((x) => x.boxId === parseInt(selectedBox));
 
 		const payload = {
@@ -24,8 +22,6 @@ export default function CreatePackageModal() {
 			boxId: box?.boxId,
 			name: box?.name,
 		};
-
-		console.log(payload);
 
 		try {
 			await createPackage(payload);

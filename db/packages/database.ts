@@ -1,5 +1,10 @@
 import { PackageType } from '@/types';
 import { openDatabase } from '../database';
+import {
+	getItem,
+	getItems,
+	updateItemQuantityPackaged,
+} from '../items/database';
 
 export const getPackages = async (orderId: number) => {
 	const db = await openDatabase();
@@ -13,20 +18,38 @@ export const getPackages = async (orderId: number) => {
 		[orderId]
 	);
 
-	const payload: PackageType[] = packages.map((_package) => {
-		const arr: any = [];
-		packagedItems.map((item) => {
-			if (item.packageId === _package.packageId) {
-				arr.push(item);
+	const items = await getItems(orderId);
+
+	const newPackagedItems = items
+		.map((item) => {
+			const matchedPackagedItem = packagedItems.find(
+				(packagedItem) => packagedItem.itemId === item.itemId
+			);
+
+			if (matchedPackagedItem) {
+				return {
+					...item,
+					packageId: matchedPackagedItem.packageId,
+					packageItemId: matchedPackagedItem.packageItemId,
+				};
 			}
-		});
+
+			return null;
+		})
+		.filter((item) => item !== null);
+
+	const payload: PackageType[] = packages.map((_package) => {
 		return {
 			..._package,
-			items: arr,
+			items: newPackagedItems
+				.map((packagedItem) => {
+					if (packagedItem.packageId === _package.packageId) {
+						return packagedItem;
+					}
+				})
+				.filter((item) => item !== undefined),
 		};
 	});
-
-	console.log('Packages loaded', packages);
 
 	return payload;
 };
@@ -90,21 +113,32 @@ export const addLineItemToPackage = async ({
 
 	if (_package.items.some((item) => item.itemId === itemId)) {
 		// add to quantity
+		const item = await getItem(itemId);
+		//@ts-ignore
+		const newQuantity = parseInt(quantity) + parseInt(item.quantityPackaged);
+
+		await db.runAsync(
+			'INSERT INTO packageditems (orderId, packageId, itemId, name, quantity) VALUES (?, ?, ?, ?, ?);',
+			[orderId, packageId, itemId, name, newQuantity]
+		);
+
 		console.log('item already here');
 	} else {
-		const result = await db.runAsync(
+		await db.runAsync(
 			'INSERT INTO packageditems (orderId, packageId, itemId, name, quantity) VALUES (?, ?, ?, ?, ?);',
 			[orderId, packageId, itemId, name, quantity]
 		);
-		console.log('Item added', result);
-
-		// const updateItem = updateItemQuantityPackaged(itemId, quantity);
-		// console.log('Line Item added');
-		return;
 	}
+
+	await updateItemQuantityPackaged(itemId, quantity);
+	console.log('Item added to package');
+
+	return;
 };
 
 export const removeLineItemFromPackage = async (packagedItemId: number) => {
+	console.log(packagedItemId);
+
 	const db = await openDatabase();
 	const result = await db.runAsync(
 		'DELETE from packageditems WHERE packageItemId = ?;',

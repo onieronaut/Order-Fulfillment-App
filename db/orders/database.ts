@@ -8,6 +8,8 @@ export const getOrders = async () => {
 
 	const items: LineItemType[] = await db.getAllAsync('SELECT * from items;');
 
+	console.log(items);
+
 	const payload: OrderType[] = orders.map((order) => {
 		const lineItems: LineItemType[] = [];
 

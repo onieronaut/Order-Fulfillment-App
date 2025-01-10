@@ -44,6 +44,7 @@ export type PackagedItemType = {
 	orderId: number;
 	name: string;
 	quantity: number;
+	quantityPackaged: number;
 };
 
 export type ShipmentType = {
