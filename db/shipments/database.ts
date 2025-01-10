@@ -2,6 +2,7 @@ import { ShipmentPackageType, ShipmentType } from '@/types';
 import { openDatabase } from '../database';
 import { getPackages } from '../packages/database';
 import dayjs from 'dayjs';
+import { getOrder } from '../orders/database';
 
 export const getShipments = async (orderId: number) => {
 	const db = await openDatabase();
@@ -14,6 +15,8 @@ export const getShipments = async (orderId: number) => {
 		'SELECT * FROM shipmentPackages WHERE orderId = ?',
 		[orderId]
 	);
+
+	console.log('x', shipmentPackages);
 
 	const packages = await getPackages(orderId);
 
@@ -93,6 +96,7 @@ export const shipShipment = async (shipment: ShipmentType) => {
 	const date = dayjs().unix() * 1000;
 
 	const db = await openDatabase();
+
 	await db.runAsync(
 		'UPDATE shipments SET status = "Shipped", shippedAt = ? WHERE shipmentId = ?;',
 		[date, shipmentId]
@@ -110,6 +114,15 @@ export const shipShipment = async (shipment: ShipmentType) => {
 				[item.itemId]
 			);
 		}
+	}
+
+	const order = await getOrder(shipment.orderId);
+
+	if (order.items.every((item) => item.status === 'Shipped')) {
+		await db.runAsync(
+			'UPDATE orders SET status = "Shipped" WHERE orderId = ?',
+			[shipment.orderId]
+		);
 	}
 
 	console.log('Shipment shipped');

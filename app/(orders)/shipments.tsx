@@ -45,7 +45,6 @@ export default function ShipScreen() {
 			<Button margin={5} theme='accent' onPress={handleCreateShipment}>
 				Create Shipment
 			</Button>
-			{/* <AddPackagesToShipment shipment={shipments[0]} /> */}
 			<FlatList
 				data={shipments}
 				keyExtractor={(item) => item.shipmentId.toString()}

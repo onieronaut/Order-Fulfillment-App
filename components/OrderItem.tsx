@@ -26,6 +26,7 @@ export const OrderItem = ({ order }: OrderItemPropsType) => {
 						<Paragraph>Status: {order?.status}</Paragraph>
 					</YStack>
 				</XStack>
+
 				<XStack flex={1} justifyContent='center'>
 					<Link
 						href={{
@@ -33,7 +34,9 @@ export const OrderItem = ({ order }: OrderItemPropsType) => {
 							params: { orderId: order.orderId },
 						}}
 						asChild>
-						<Button theme='accent'>Fulfill</Button>
+						<Button theme='accent'>
+							{order.status !== 'Shipped' ? 'Fulfill' : 'View'}
+						</Button>
 					</Link>
 				</XStack>
 			</XStack>

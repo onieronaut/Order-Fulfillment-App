@@ -58,12 +58,17 @@ export const AddPackagesToShipment = ({
 				.map(([key]) => key),
 		};
 
+		console.log(data);
+
 		try {
 			await addPackagesToShipment(shipment.shipmentId, shipment.orderId, data);
+			setOpen(false);
 		} catch (err) {
 			console.log(err);
 		}
 	}
+
+	console.log(shipment);
 
 	return (
 		<>

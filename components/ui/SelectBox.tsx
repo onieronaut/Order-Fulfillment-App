@@ -1,16 +1,7 @@
-import React from 'react';
 import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons';
+import React from 'react';
 
-import type { FontSizeTokens, SelectProps } from 'tamagui';
-import {
-	Adapt,
-	Label,
-	Select,
-	Sheet,
-	XStack,
-	YStack,
-	getFontSize,
-} from 'tamagui';
+import { Adapt, Select, Sheet, YStack } from 'tamagui';
 import { LinearGradient } from 'tamagui/linear-gradient';
 
 export const SelectBox = ({
@@ -24,8 +15,6 @@ export const SelectBox = ({
 	id,
 	identifier,
 }) => {
-	const [val, setVal] = React.useState('apple');
-
 	return (
 		<Select
 			value={value}
@@ -91,7 +80,7 @@ export const SelectBox = ({
 						{/* for longer lists memoizing these is useful */}
 						{React.useMemo(
 							() =>
-								items.map((item, i) => {
+								items?.map((item, i) => {
 									return (
 										<Select.Item
 											index={i}
@@ -146,28 +135,3 @@ export const SelectBox = ({
 		</Select>
 	);
 };
-
-const items = [
-	{ name: 'Apple' },
-	{ name: 'Pear' },
-	{ name: 'Blackberry' },
-	{ name: 'Peach' },
-	{ name: 'Apricot' },
-	{ name: 'Melon' },
-	{ name: 'Honeydew' },
-	{ name: 'Starfruit' },
-	{ name: 'Blueberry' },
-	{ name: 'Raspberry' },
-	{ name: 'Strawberry' },
-	{ name: 'Mango' },
-	{ name: 'Pineapple' },
-	{ name: 'Lime' },
-	{ name: 'Lemon' },
-	{ name: 'Coconut' },
-	{ name: 'Guava' },
-	{ name: 'Papaya' },
-	{ name: 'Orange' },
-	{ name: 'Grape' },
-	{ name: 'Jackfruit' },
-	{ name: 'Durian' },
-];

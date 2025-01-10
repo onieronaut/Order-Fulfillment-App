@@ -1,4 +1,6 @@
+import { CreatePackage } from '@/components/CreatePackage';
 import { PackageItem } from '@/components/PackageItem';
+import { SelectBox } from '@/components/ui/SelectBox';
 import { getPackages } from '@/db/packages/database';
 import { PackageType } from '@/types';
 import { Link, useFocusEffect, useGlobalSearchParams } from 'expo-router';
@@ -31,11 +33,7 @@ export default function PackagesScreen() {
 
 	return (
 		<YStack flex={1} padding={10}>
-			<Link href={{ pathname: '/createpackage' }} asChild>
-				<Button theme='accent' margin={5}>
-					Create Package
-				</Button>
-			</Link>
+			<CreatePackage />
 			<FlatList
 				data={packages}
 				keyExtractor={(item) => `${item.packageId}`}

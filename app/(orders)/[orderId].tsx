@@ -1,8 +1,8 @@
 import { LineItem } from '@/components/LineItem';
 import { getOrder } from '@/db/orders/database';
 import { OrderType } from '@/types';
-import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 import { YStack } from 'tamagui';
 
@@ -11,20 +11,23 @@ export default function OrderScreen() {
 
 	const [order, setOrder] = useState<OrderType>();
 
-	useEffect(() => {
-		if (!orderId) return;
+	useFocusEffect(
+		useCallback(() => {
+			if (!orderId) return;
 
-		async function handleGetOrder() {
-			try {
-				const result = await getOrder(parseInt(orderId));
-				setOrder(result);
-			} catch (err) {
-				console.log(err);
+			async function handleGetOrder() {
+				try {
+					const result = await getOrder(parseInt(orderId));
+					setOrder(result);
+				} catch (err) {
+					console.log(err);
+				}
 			}
-		}
 
-		handleGetOrder();
-	}, [orderId]);
+			handleGetOrder();
+			return () => {};
+		}, [orderId])
+	);
 
 	return (
 		<YStack flex={1} padding={10}>

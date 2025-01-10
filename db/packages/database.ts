@@ -3,6 +3,7 @@ import { openDatabase } from '../database';
 import {
 	getItem,
 	getItems,
+	getPackageItem,
 	updateItemQuantityPackaged,
 } from '../items/database';
 
@@ -140,13 +141,20 @@ export const removeLineItemFromPackage = async (packagedItemId: number) => {
 	console.log(packagedItemId);
 
 	const db = await openDatabase();
+
+	const packagedItem = await getPackageItem(packagedItemId);
+
+	const { quantity } = packagedItem;
+
 	const result = await db.runAsync(
-		'DELETE from packageditems WHERE packageItemId = ?;',
+		'DELETE FROM packageditems WHERE packageItemId = ?;',
 		[packagedItemId]
 	);
 
+	await updateItemQuantityPackaged(packagedItem.itemId, -quantity);
+
 	console.log('Packaged Item removed');
-	return result;
+	return;
 };
 
 export const finishPackage = async (packageId: number) => {

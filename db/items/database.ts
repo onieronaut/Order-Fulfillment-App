@@ -1,4 +1,4 @@
-import { LineItemType } from '@/types';
+import { LineItemType, PackagedItemType } from '@/types';
 import { openDatabase } from '../database';
 
 export const getItems = async (orderId: number) => {
@@ -49,8 +49,24 @@ export const updateItemQuantityPackaged = async (
 		]);
 	}
 
+	//@ts-ignore
+	if (parseInt(newQuantityPackaged) !== parseInt(item.quantity)) {
+		await db.runAsync('UPDATE items SET status = "Pending" WHERE itemId = ?;', [
+			itemId,
+		]);
+	}
+
 	console.log('Item updated');
 	return;
 };
 
-// UPDATE LINE ITEM STATUS / QUANTITY ON REMOVE
+export const getPackageItem = async (packageItemId: number) => {
+	const db = await openDatabase();
+
+	const packageItem: PackagedItemType = await db.getFirstAsync(
+		'SELECT * FROM packagedItems WHERE packageItemId = ?;',
+		[packageItemId]
+	);
+
+	return packageItem;
+};

@@ -5,26 +5,17 @@ import {
 	ThemeProvider,
 } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Link, Stack } from 'expo-router';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
-import { Pressable, useColorScheme } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { createTables, dropTables } from '@/db/database';
+import { createTables } from '@/db/database';
 import { createOrder } from '@/db/orders/database';
+import { useColorScheme } from 'react-native';
 // import { createTamagui, createTokens, TamaguiProvider } from 'tamagui';
-import {
-	TamaguiProvider,
-	createTokens,
-	createTamagui,
-	View,
-	Theme,
-	PortalProvider,
-} from 'tamagui';
+import { PortalProvider, TamaguiProvider } from 'tamagui';
 
-import defaultConfig, { tokens } from '@tamagui/config/v3';
 import tamaguiConfig from '@/tamagui.config';
 
 // import '@tamagui/core/reset.css';
@@ -102,42 +93,12 @@ function RootLayoutNav() {
 							name='index'
 							options={{
 								title: 'Orders',
-								headerRight: ({ tintColor }) => (
-									<Pressable onPress={handleCreateOrder}>
-										<Ionicons
-											name='add-circle-outline'
-											size={24}
-											color={tintColor}
-										/>
-									</Pressable>
-								),
 							}}
 						/>
 						<Stack.Screen
 							name='(orders)'
 							options={{
 								title: 'Order #1',
-							}}
-						/>
-						<Stack.Screen
-							name='createpackage'
-							options={{
-								title: 'Create Package',
-								presentation: 'modal',
-							}}
-						/>
-						<Stack.Screen
-							name='addlineitem'
-							options={{
-								title: 'Add Line Item to Package',
-								presentation: 'modal',
-							}}
-						/>
-						<Stack.Screen
-							name='createshipment'
-							options={{
-								title: 'Create Shipment',
-								presentation: 'modal',
 							}}
 						/>
 					</Stack>

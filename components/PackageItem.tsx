@@ -9,7 +9,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { ChevronDown } from '@tamagui/lucide-icons';
 import { Link } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import {
 	Accordion,
 	Button,
@@ -22,6 +22,7 @@ import {
 	YGroup,
 	YStack,
 } from 'tamagui';
+import { AddLineItemToPackage } from './AddLineItemToPackage';
 
 interface PackageItemPropsType {
 	_package: PackageType;
@@ -29,6 +30,8 @@ interface PackageItemPropsType {
 }
 
 export const PackageItem = ({ _package, index }: PackageItemPropsType) => {
+	const [open, setOpen] = useState(false);
+
 	async function handleRemoveLineItemFromPackage(packageItemId: number) {
 		try {
 			await removeLineItemFromPackage(packageItemId);
@@ -61,21 +64,14 @@ export const PackageItem = ({ _package, index }: PackageItemPropsType) => {
 					icon={<Entypo name='circle-with-cross' size={16} color='white' />}>
 					Delete
 				</Button>
-				<Link
-					href={{
-						pathname: '/addlineitem',
-						params: {
-							orderId: _package.orderId,
-							packageId: _package.packageId,
-						},
-					}}
-					asChild>
-					<Button
-						theme='accent'
-						icon={<Entypo name='circle-with-plus' size={16} color='white' />}>
-						Add Item
-					</Button>
-				</Link>
+				<Button
+					theme='accent'
+					icon={<Entypo name='circle-with-plus' size={16} color='white' />}
+					onPress={() => {
+						setOpen(true);
+					}}>
+					Add Item
+				</Button>
 				<Button
 					onPress={() => handleFinishPackage(_package.packageId)}
 					theme='accent'
@@ -107,6 +103,7 @@ export const PackageItem = ({ _package, index }: PackageItemPropsType) => {
 
 	return (
 		<Card size='$5'>
+			<AddLineItemToPackage _package={_package} open={open} setOpen={setOpen} />
 			<YStack flex={1}>
 				<XStack>
 					<XStack flex={1}>
