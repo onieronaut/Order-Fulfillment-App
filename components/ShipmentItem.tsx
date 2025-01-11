@@ -8,8 +8,11 @@ import {
 	Card,
 	H3,
 	Paragraph,
+	Separator,
 	SizableText,
 	Square,
+	Text,
+	XGroup,
 	XStack,
 	YGroup,
 	YStack,
@@ -21,18 +24,25 @@ import {
 	shipShipment,
 } from '@/db/shipments/database';
 import dayjs from 'dayjs';
+import { StatusChip } from './ui/StatusChip';
 
 interface OrderItemPropsType {
 	shipment: ShipmentType;
 	index: number;
+	handleGetShipments: () => void;
 }
 
-export const ShipmentItem = ({ shipment, index }: OrderItemPropsType) => {
+export const ShipmentItem = ({
+	shipment,
+	index,
+	handleGetShipments,
+}: OrderItemPropsType) => {
 	const [open, setOpen] = useState(false);
 
 	async function handleDeleteShipment() {
 		try {
 			await deleteShipment(shipment.shipmentId);
+			await handleGetShipments();
 		} catch (err) {
 			console.log(err);
 		}
@@ -41,14 +51,16 @@ export const ShipmentItem = ({ shipment, index }: OrderItemPropsType) => {
 	async function handleShipShipment() {
 		try {
 			await shipShipment(shipment);
+			await handleGetShipments();
 		} catch (err) {
 			console.log(err);
 		}
 	}
 
-	async function handleRemovePackageFromShipment(packageId: number) {
+	async function handleRemovePackageFromShipment(packageId: string) {
 		try {
 			await removePackageFromShipment(packageId);
+			await handleGetShipments();
 		} catch (err) {
 			console.log(err);
 		}
@@ -56,27 +68,37 @@ export const ShipmentItem = ({ shipment, index }: OrderItemPropsType) => {
 
 	const PendingShipmentButtons = () => {
 		return (
-			<YGroup flex={1}>
-				<YGroup.Item>
+			<XGroup>
+				<XGroup.Item>
 					<Button
+						minWidth={'33%'}
 						onPress={handleDeleteShipment}
 						theme='accent'
 						icon={<Entypo name='circle-with-cross' size={16} color='white' />}>
 						Delete
 					</Button>
-				</YGroup.Item>
-				<YGroup.Item>
+				</XGroup.Item>
+				<Separator vertical />
+
+				<XGroup.Item>
 					<Button
+						minWidth={'33%'}
 						theme='accent'
 						icon={<Entypo name='circle-with-plus' size={16} color='white' />}
 						onPress={() => {
 							setOpen(true);
 						}}>
-						Add Packages
+						<YStack alignItems='center'>
+							<Text>Add</Text>
+							<Text>Packages</Text>
+						</YStack>
 					</Button>
-				</YGroup.Item>
-				<YGroup.Item>
+				</XGroup.Item>
+				<Separator vertical />
+
+				<XGroup.Item>
 					<Button
+						minWidth={'33%'}
 						onPress={handleShipShipment}
 						theme='accent'
 						icon={
@@ -88,8 +110,8 @@ export const ShipmentItem = ({ shipment, index }: OrderItemPropsType) => {
 						}>
 						Ship
 					</Button>
-				</YGroup.Item>
-			</YGroup>
+				</XGroup.Item>
+			</XGroup>
 		);
 	};
 
@@ -100,29 +122,21 @@ export const ShipmentItem = ({ shipment, index }: OrderItemPropsType) => {
 				open={open}
 				setOpen={setOpen}
 			/>
-			<YStack flex={1}>
-				<XStack>
-					<XStack flex={1}>
-						<Card.Header>
-							<H3>Shipment #{index + 1}</H3>
-							<SizableText size='$4'>Status: {shipment?.status}</SizableText>
-							{shipment.status === 'Shipped' && (
-								<SizableText size='$4'>
-									Shipped At:{' '}
-									{dayjs(shipment?.shippedAt).format('MM/DD/YY @ hh:mm A')}
-								</SizableText>
-							)}
-						</Card.Header>
-					</XStack>
-					{shipment.status === 'Pending' && (
-						<XStack flex={1} justifyContent='center'>
-							<PendingShipmentButtons />
 
-							{/* {_package.status === 'Packed' && <PackedPackageButtons />} */}
-						</XStack>
-					)}
+			<Card.Header>
+				<XStack justifyContent='space-between'>
+					<YStack>
+						<H3>Shipment #{index + 1}</H3>
+						{shipment.status === 'Shipped' && (
+							<SizableText size='$4'>
+								Shipped At:{' '}
+								{dayjs(shipment?.shippedAt).format('MM/DD/YY @ hh:mm A')}
+							</SizableText>
+						)}
+					</YStack>
+					<StatusChip status={shipment.status} />
 				</XStack>
-			</YStack>
+			</Card.Header>
 			<Accordion
 				overflow='hidden'
 				width='100%'
@@ -181,6 +195,11 @@ export const ShipmentItem = ({ shipment, index }: OrderItemPropsType) => {
 					</Accordion.HeightAnimator>
 				</Accordion.Item>
 			</Accordion>
+			<Card.Footer>
+				<XStack flex={1}>
+					{shipment.status === 'Pending' && <PendingShipmentButtons />}
+				</XStack>
+			</Card.Footer>
 		</Card>
 	);
 };

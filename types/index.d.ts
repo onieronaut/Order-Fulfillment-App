@@ -1,13 +1,13 @@
 export type OrderType = {
-	orderId: number;
+	orderId: string;
 	createdAt: number;
 	items: LineItemType[];
 	status: 'Pending' | 'Shipped' | 'Packed';
 };
 
 export type ItemType = {
-	itemId: number;
-	orderId: number;
+	itemId: string;
+	orderId: string;
 	name: string;
 	quantity: number;
 	status: 'Pending' | 'Packed' | 'Shipped';
@@ -15,22 +15,22 @@ export type ItemType = {
 };
 
 export type BoxType = {
-	boxId: number;
+	boxId: string;
 	name: string;
 };
 
 export type PackageType = {
-	packageId: number;
-	boxId: number;
-	orderId: number;
+	packageId: string;
+	boxId: string;
+	orderId: string;
 	name: string;
 	status: 'Packed' | 'Shipped' | 'Open';
 	items: PackagedItemType[];
 };
 
 export type LineItemType = {
-	itemId: number;
-	orderId: number;
+	itemId: string;
+	orderId: string;
 	name: string;
 	quantity: number;
 	quantityPackaged: number;
@@ -38,26 +38,26 @@ export type LineItemType = {
 };
 
 export type PackagedItemType = {
-	packageItemId: number;
-	packageId: number;
-	itemId: number;
-	orderId: number;
+	packageItemId: string;
+	packageId: string;
+	itemId: string;
+	orderId: string;
 	name: string;
 	quantity: number;
 	quantityPackaged: number;
 };
 
 export type ShipmentType = {
-	shipmentId: number;
-	orderId: number;
+	shipmentId: string;
+	orderId: string;
 	shippedAt: number;
 	packages: PackageType[];
 	status: 'Pending' | 'Shipped';
 };
 
 export type ShipmentPackageType = {
-	shipmentPackageId: number;
-	shipmentId: number;
-	orderId: number;
-	packageId: number;
+	shipmentPackageId: string;
+	shipmentId: string;
+	orderId: string;
+	packageId: string;
 };

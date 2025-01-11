@@ -10,11 +10,12 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
-import { createTables } from '@/db/database';
+import { createTables, dropTables } from '@/db/database';
 import { createOrder } from '@/db/orders/database';
 import { useColorScheme } from 'react-native';
 // import { createTamagui, createTokens, TamaguiProvider } from 'tamagui';
 import { PortalProvider, TamaguiProvider } from 'tamagui';
+import 'react-native-get-random-values';
 
 import tamaguiConfig from '@/tamagui.config';
 
@@ -45,8 +46,8 @@ export default function RootLayout() {
 	useEffect(() => {
 		const prepare = async () => {
 			try {
-				await createTables();
 				// await dropTables();
+				await createTables();
 			} catch (err) {
 				console.warn(err);
 			}

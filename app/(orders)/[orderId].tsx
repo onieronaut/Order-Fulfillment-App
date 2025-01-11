@@ -2,8 +2,8 @@ import { LineItem } from '@/components/LineItem';
 import { getOrder } from '@/db/orders/database';
 import { OrderType } from '@/types';
 import { useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { useCallback, useState } from 'react';
+import { FlatList } from 'react-native';
 import { YStack } from 'tamagui';
 
 export default function OrderScreen() {
@@ -17,7 +17,7 @@ export default function OrderScreen() {
 
 			async function handleGetOrder() {
 				try {
-					const result = await getOrder(parseInt(orderId));
+					const result = await getOrder(orderId);
 					setOrder(result);
 				} catch (err) {
 					console.log(err);

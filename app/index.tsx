@@ -32,9 +32,9 @@ export default function OrdersScreen() {
 			<FlatList
 				data={orders}
 				keyExtractor={(item) => item.orderId.toString()}
-				renderItem={({ item }) => (
+				renderItem={({ item, index }) => (
 					<YStack padding={5}>
-						<OrderItem order={item} />
+						<OrderItem order={item} index={index} />
 					</YStack>
 				)}
 			/>

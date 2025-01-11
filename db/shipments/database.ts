@@ -3,8 +3,9 @@ import { openDatabase } from '../database';
 import { getPackages } from '../packages/database';
 import dayjs from 'dayjs';
 import { getOrder } from '../orders/database';
+import { v4 as uuidv4 } from 'uuid';
 
-export const getShipments = async (orderId: number) => {
+export const getShipments = async (orderId: string) => {
 	const db = await openDatabase();
 	const shipments: ShipmentType[] = await db.getAllAsync(
 		'SELECT * FROM shipments WHERE orderId = ?;',
@@ -15,8 +16,6 @@ export const getShipments = async (orderId: number) => {
 		'SELECT * FROM shipmentPackages WHERE orderId = ?',
 		[orderId]
 	);
-
-	console.log('x', shipmentPackages);
 
 	const packages = await getPackages(orderId);
 
@@ -53,32 +52,40 @@ export const getShipments = async (orderId: number) => {
 	return payload;
 };
 
-export const createShipment = async (orderId: number) => {
+export const createShipment = async (orderId: string) => {
+	const uniqueId = uuidv4();
+
 	const db = await openDatabase();
-	const result = await db.runAsync(
-		'INSERT INTO shipments (orderId, status) VALUES (?, "Pending");',
-		[orderId]
+	await db.runAsync(
+		'INSERT INTO shipments (shipmentId, orderId, status) VALUES (?, ?, "Pending");',
+		[uniqueId, orderId]
 	);
 
 	console.log('Shipment created');
-	return result;
+	return;
 };
 
-export const addPackagesToShipment = async (shipmentId, orderId, data) => {
+export const addPackagesToShipment = async (
+	shipmentId: string,
+	orderId: string,
+	data: { packageIds: string[] }
+) => {
+	const uniqueId = uuidv4();
+
 	const { packageIds } = data;
 
 	const db = await openDatabase();
 	for (const packageId of packageIds) {
 		await db.runAsync(
-			'INSERT INTO shipmentPackages (shipmentId, orderId, packageId) VALUES (?, ?, ?);',
-			[shipmentId, orderId, packageId]
+			'INSERT INTO shipmentPackages (shipmentPackageId, shipmentId, orderId, packageId) VALUES (?, ?, ?, ?);',
+			[uniqueId, shipmentId, orderId, packageId]
 		);
 	}
 	console.log('Packages added to shipment');
 	return;
 };
 
-export const deleteShipment = async (shipmentId: number) => {
+export const deleteShipment = async (shipmentId: string) => {
 	const db = await openDatabase();
 	await db.runAsync('DELETE FROM shipments WHERE shipmentId = ?;', [
 		shipmentId,
@@ -128,7 +135,7 @@ export const shipShipment = async (shipment: ShipmentType) => {
 	console.log('Shipment shipped');
 };
 
-export const removePackageFromShipment = async (packageId: number) => {
+export const removePackageFromShipment = async (packageId: string) => {
 	const db = await openDatabase();
 	await db.runAsync('DELETE FROM shipmentPackages WHERE packageId = ?;', [
 		packageId,

@@ -1,7 +1,8 @@
 import { LineItemType, PackagedItemType } from '@/types';
 import { openDatabase } from '../database';
+import { v4 as uuidv4 } from 'uuid';
 
-export const getItems = async (orderId: number) => {
+export const getItems = async (orderId: string) => {
 	const db = await openDatabase();
 
 	const items: LineItemType[] = await db.getAllAsync(
@@ -14,7 +15,7 @@ export const getItems = async (orderId: number) => {
 	return items;
 };
 
-export const getItem = async (itemId: number) => {
+export const getItem = async (itemId: string) => {
 	const db = await openDatabase();
 	const item: any = await db.getFirstAsync(
 		'SELECT * FROM items WHERE itemId = ?;',
@@ -27,20 +28,20 @@ export const getItem = async (itemId: number) => {
 };
 
 export const updateItemQuantityPackaged = async (
-	itemId: number,
+	itemId: string,
 	quantityPackaged: number
 ) => {
 	const db = await openDatabase();
 
 	const item = await getItem(itemId);
-	const newQuantityPackaged = item.quantityPackaged + quantityPackaged;
+	const newQuantityPackaged =
+		//@ts-ignore
+		parseInt(item.quantityPackaged) + parseInt(quantityPackaged);
 
 	await db.runAsync('UPDATE items SET quantityPackaged = ? WHERE itemId = ?;', [
 		newQuantityPackaged,
 		itemId,
 	]);
-
-	console.log('numbers', newQuantityPackaged, item.quantity);
 
 	//@ts-ignore
 	if (parseInt(newQuantityPackaged) === parseInt(item.quantity)) {
@@ -60,7 +61,7 @@ export const updateItemQuantityPackaged = async (
 	return;
 };
 
-export const getPackageItem = async (packageItemId: number) => {
+export const getPackageItem = async (packageItemId: string) => {
 	const db = await openDatabase();
 
 	const packageItem: PackagedItemType = await db.getFirstAsync(

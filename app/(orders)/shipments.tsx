@@ -2,6 +2,7 @@ import { AddPackagesToShipment } from '@/components/AddPackagesToShipment';
 import { ShipmentItem } from '@/components/ShipmentItem';
 import { createShipment, getShipments } from '@/db/shipments/database';
 import { ShipmentType } from '@/types';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { FlatList } from 'react-native';
@@ -16,7 +17,19 @@ export default function ShipScreen() {
 
 	async function handleCreateShipment() {
 		try {
-			await createShipment(parseInt(orderId));
+			await createShipment(orderId);
+			await handleGetShipments();
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
+	async function handleGetShipments() {
+		try {
+			const result = await getShipments(orderId);
+			console.log(result);
+
+			setShipments(result);
 		} catch (err) {
 			console.log(err);
 		}
@@ -26,15 +39,7 @@ export default function ShipScreen() {
 		useCallback(() => {
 			if (!orderId) return;
 
-			async function handleGetPackages() {
-				try {
-					const result = await getShipments(parseInt(orderId));
-					setShipments(result);
-				} catch (err) {
-					console.log(err);
-				}
-			}
-			handleGetPackages();
+			handleGetShipments();
 
 			return () => {};
 		}, [orderId])
@@ -42,18 +47,32 @@ export default function ShipScreen() {
 
 	return (
 		<YStack flex={1} padding={10}>
-			<Button margin={5} theme='accent' onPress={handleCreateShipment}>
-				Create Shipment
-			</Button>
 			<FlatList
 				data={shipments}
 				keyExtractor={(item) => item.shipmentId.toString()}
 				renderItem={({ item, index }) => (
 					<YStack padding={5}>
-						<ShipmentItem shipment={item} index={index} />
+						<ShipmentItem
+							shipment={item}
+							index={index}
+							handleGetShipments={handleGetShipments}
+						/>
 					</YStack>
 				)}
 			/>
+			<YStack
+				backgroundColor={'$background075'}
+				height={'10%'}
+				justifyContent='center'>
+				<Button
+					theme='accent'
+					onPress={handleCreateShipment}
+					icon={
+						<MaterialIcons name='local-shipping' size={18} color={'white'} />
+					}>
+					Create Shipment
+				</Button>
+			</YStack>
 		</YStack>
 	);
 }

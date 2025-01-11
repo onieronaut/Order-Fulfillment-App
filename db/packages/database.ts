@@ -6,8 +6,9 @@ import {
 	getPackageItem,
 	updateItemQuantityPackaged,
 } from '../items/database';
+import { v4 as uuidv4 } from 'uuid';
 
-export const getPackages = async (orderId: number) => {
+export const getPackages = async (orderId: string) => {
 	const db = await openDatabase();
 	const packages: any[] = await db.getAllAsync(
 		'SELECT * FROM packages WHERE orderId = ?;',
@@ -19,30 +20,10 @@ export const getPackages = async (orderId: number) => {
 		[orderId]
 	);
 
-	const items = await getItems(orderId);
-
-	const newPackagedItems = items
-		.map((item) => {
-			const matchedPackagedItem = packagedItems.find(
-				(packagedItem) => packagedItem.itemId === item.itemId
-			);
-
-			if (matchedPackagedItem) {
-				return {
-					...item,
-					packageId: matchedPackagedItem.packageId,
-					packageItemId: matchedPackagedItem.packageItemId,
-				};
-			}
-
-			return null;
-		})
-		.filter((item) => item !== null);
-
 	const payload: PackageType[] = packages.map((_package) => {
 		return {
 			..._package,
-			items: newPackagedItems
+			items: packagedItems
 				.map((packagedItem) => {
 					if (packagedItem.packageId === _package.packageId) {
 						return packagedItem;
@@ -55,7 +36,7 @@ export const getPackages = async (orderId: number) => {
 	return payload;
 };
 
-export const getPackage = async (packageId: number) => {
+export const getPackage = async (packageId: string) => {
 	const db = await openDatabase();
 	const _package: any = await db.getFirstAsync(
 		'SELECT * FROM packages WHERE packageId = ?;',
@@ -75,59 +56,54 @@ export const getPackage = async (packageId: number) => {
 	return payload;
 };
 
-export const createPackage = async ({
-	orderId,
-	boxId,
-	name,
-}: {
-	orderId: number;
-	boxId: number;
-	name: string;
-}) => {
+export const createPackage = async (
+	orderId: string,
+	data: { boxId: string; name: string }
+) => {
+	const { boxId, name } = data;
+	const uniqueId = uuidv4();
+
 	const db = await openDatabase();
-	const result = await db.runAsync(
-		'INSERT INTO packages (orderId, boxId, name, items, status) VALUES (?, ?, ?, 0, "Open");',
-		[orderId, boxId, name]
+	await db.runAsync(
+		'INSERT INTO packages (packageId, orderId, boxId, name, items, status) VALUES (?, ?, ?, ?, 0, "Open");',
+		[uniqueId, orderId, boxId, name]
 	);
 
-	console.log('Package created', result);
+	console.log('Package created');
 
-	return result.lastInsertRowId;
+	return;
 };
 
-export const addLineItemToPackage = async ({
-	orderId,
-	packageId,
-	itemId,
-	name,
-	quantity,
-}: {
-	orderId: number;
-	packageId: number;
-	itemId: number;
-	name: string;
-	quantity: number;
-}) => {
+export const addLineItemToPackage = async (
+	orderId: string,
+	packageId: string,
+	itemId: string,
+	quantity: number
+) => {
 	const db = await openDatabase();
 
 	const _package = await getPackage(packageId);
+	const uniqueId = uuidv4();
 
 	if (_package.items.some((item) => item.itemId === itemId)) {
-		// add to quantity
+		const { packageItemId, quantity: currentQuantity } = _package.items.find(
+			(item) => item.itemId === itemId
+		);
+
 		const item = await getItem(itemId);
-		//@ts-ignore
-		const newQuantity = parseInt(quantity) + parseInt(item.quantityPackaged);
+		// @ts-ignore
+		const newQuantity = parseInt(quantity) + parseInt(currentQuantity);
 
 		await db.runAsync(
-			'INSERT INTO packageditems (orderId, packageId, itemId, name, quantity) VALUES (?, ?, ?, ?, ?);',
-			[orderId, packageId, itemId, name, newQuantity]
+			'UPDATE packageditems SET quantity = ? WHERE packageItemId = ?;',
+			[newQuantity, packageItemId]
 		);
 
 		console.log('item already here');
 	} else {
 		await db.runAsync(
-			'INSERT INTO packageditems (orderId, packageId, itemId, name, quantity) VALUES (?, ?, ?, ?, ?);',
-			[orderId, packageId, itemId, name, quantity]
+			'INSERT INTO packageditems (packageItemId, orderId, packageId, itemId, name, quantity) VALUES (?, ?, ?, ?, "x", ?);',
+			[uniqueId, orderId, packageId, itemId, quantity]
 		);
 	}
 
@@ -137,19 +113,16 @@ export const addLineItemToPackage = async ({
 	return;
 };
 
-export const removeLineItemFromPackage = async (packagedItemId: number) => {
-	console.log(packagedItemId);
-
+export const removeLineItemFromPackage = async (packagedItemId: string) => {
 	const db = await openDatabase();
 
 	const packagedItem = await getPackageItem(packagedItemId);
 
 	const { quantity } = packagedItem;
 
-	const result = await db.runAsync(
-		'DELETE FROM packageditems WHERE packageItemId = ?;',
-		[packagedItemId]
-	);
+	await db.runAsync('DELETE FROM packageditems WHERE packageItemId = ?;', [
+		packagedItemId,
+	]);
 
 	await updateItemQuantityPackaged(packagedItem.itemId, -quantity);
 
@@ -157,7 +130,7 @@ export const removeLineItemFromPackage = async (packagedItemId: number) => {
 	return;
 };
 
-export const finishPackage = async (packageId: number) => {
+export const finishPackage = async (packageId: string) => {
 	const db = await openDatabase();
 
 	const result = await db.runAsync(
@@ -169,7 +142,7 @@ export const finishPackage = async (packageId: number) => {
 	return result;
 };
 
-export const undoFinishPackage = async (packageId: number) => {
+export const undoFinishPackage = async (packageId: string) => {
 	const db = await openDatabase();
 
 	const result = await db.runAsync(
@@ -179,4 +152,25 @@ export const undoFinishPackage = async (packageId: number) => {
 
 	console.log('Package updated', result);
 	return result;
+};
+
+export const deletePackage = async (packageId: string) => {
+	const db = await openDatabase();
+
+	const _package = await getPackage(packageId);
+
+	await db.runAsync('DELETE FROM packages WHERE packageId = ?;', [packageId]);
+
+	for (const packageItem of _package.items) {
+		const packagedItem = await getPackageItem(packageItem.packageItemId);
+
+		await updateItemQuantityPackaged(
+			packageItem.itemId,
+			-packagedItem.quantity
+		);
+	}
+
+	await db.runAsync('DELETE FROM packagedItems WHERE packageId = ?');
+
+	console.log('Packaged deleted');
 };

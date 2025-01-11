@@ -12,13 +12,13 @@ export const createTables = async () => {
 		.execAsync(
 			`
     CREATE TABLE IF NOT EXISTS orders (
-      orderId INTEGER PRIMARY KEY NOT NULL,
+      orderId TEXT NOT NULL,
       createdAt INTEGER NOT NULL,
       status TEXT NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS items (
-      itemId INTEGER PRIMARY KEY NOT NULL,
+      itemId TEXT NOT NULL,
       orderId INTEGER NOT NULL,
       name TEXT NOT NULL,
       quantity INTEGER NOT NULL,
@@ -27,12 +27,12 @@ export const createTables = async () => {
     );
 
     CREATE TABLE IF NOT EXISTS boxes (
-      boxId INTEGER PRIMARY KEY NOT NULL,
+      boxId TEXT NOT NULL,
       name TEXT NOT NULL
     );
 
      CREATE TABLE IF NOT EXISTS packages (
-      packageId INTEGER PRIMARY KEY NOT NULL,
+      packageId TEXT NOT NULL,
       orderId INTEGER NOT NULL,
       boxId INTEGER NOT NULL,
       name TEXT NOT NULL,
@@ -41,7 +41,7 @@ export const createTables = async () => {
     );
 
     CREATE TABLE IF NOT EXISTS packageditems (
-        packageItemId INTEGER PRIMARY KEY NOT NULL,
+        packageItemId TEXT NOT NULL,
         packageId INTEGER NOT NULL,
         itemId INTEGER NOT NULL,
         orderId INTEGER NOT NULL,
@@ -50,32 +50,32 @@ export const createTables = async () => {
     );
 
     CREATE TABLE IF NOT EXISTS shipments (
-        shipmentId INTEGER PRIMARY KEY NOT NULL,
+        shipmentId TEXT NOT NULL,
         status TEXT NOT NULL,
         shippedAt INTEGER,
         orderId INTEGER NOT NULL
     );
 
        CREATE TABLE IF NOT EXISTS shipmentPackages (
-        shipmentPackageId INTEGER PRIMARY KEY NOT NULL,
+        shipmentPackageId TEXT NOT NULL,
         shipmentId INTEGER NOT NULL,
         packageId INTEGER NOT NULL,
         orderId INTEGER NOT NULL
     );
 
 
+
+    
     `
 		)
 		.catch((err) => console.log(err));
 
-	//    UPDATE items SET quantityPackaged = 0 WHERE itemId = 3;
+	// INSERT INTO boxes (boxId, name) VALUES ('b2cbd40b-bc13-46e1-bfdd-92e6a5e53d8a','Small Box');
+	// INSERT INTO boxes (boxId, name) VALUES ('8130aa1f-d37d-4428-acfa-01175b75702d','Medium Box');
+	// INSERT INTO boxes (boxId, name) VALUES ('a26c19d8-3a6d-4d8a-8195-264bbb0c2348', 'Large Box');
 
-	// INSERT INTO boxes (name) VALUES ('Small Box');
-	// INSERT INTO boxes (name) VALUES ('Medium Box');
-	// INSERT INTO boxes (name) VALUES ('Large Box');
-
-	// INSERT INTO orders (createdAt, status) VALUES ('123456789','Pending');
-	//    	INSERT INTO items (name, quantity, orderId, quantityPackaged, status) VALUES ('Graphics Card', 5, 1, 0, 'Pending');
+	// INSERT INTO orders (orderId, createdAt, status) VALUES ('4f442674-b846-489c-8efa-32932d8a283f','123456789','Pending');
+	// INSERT INTO items (itemId, name, quantity, orderId, quantityPackaged, status) VALUES ('c396d3e9-ba1e-45b6-94fe-a217fd6b2c99', 'Graphics Card', 5, '4f442674-b846-489c-8efa-32932d8a283f', 0, 'Pending');
 
 	console.log('Database Created');
 };
@@ -97,7 +97,7 @@ export const getBoxes = async () => {
 	const db = await openDatabase();
 	const boxes: BoxType[] = await db.getAllAsync('SELECT * FROM boxes;');
 
-	console.log('Boxes loaded', boxes);
+	console.log('Boxes loaded');
 
 	return boxes;
 };

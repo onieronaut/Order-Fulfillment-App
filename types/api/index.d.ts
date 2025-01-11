@@ -1,5 +1,5 @@
 export type GetOrderType = {
-	orderId: number;
+	orderId: string;
 	createdAt: number;
 	status: 'Packed' | 'Pending' | 'Shipped';
 };

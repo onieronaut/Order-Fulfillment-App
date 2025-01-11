@@ -16,17 +16,17 @@ import {
 import { SelectBox } from './ui/SelectBox';
 import { useRouter } from 'expo-router';
 import { getBoxes } from '@/db/database';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface CreatePackagePropsType {
-	// shipment: ShipmentType;
-	// setOpen: any;
-	// open: boolean;
+	orderId: string;
+	handleGetPackages: () => void;
 }
 
-export const CreatePackage = ({}: // shipment,
-// open,
-// setOpen,
-CreatePackagePropsType) => {
+export const CreatePackage = ({
+	orderId,
+	handleGetPackages,
+}: CreatePackagePropsType) => {
 	const [position, setPosition] = React.useState(0);
 	const [open, setOpen] = useState(false);
 
@@ -36,16 +36,16 @@ CreatePackagePropsType) => {
 	async function handleCreatePackage() {
 		if (!selectedBox) return;
 
-		const box = boxes?.find((x) => x.boxId === parseInt(selectedBox));
+		const box = boxes?.find((x) => x.boxId === selectedBox);
 
 		const payload = {
-			orderId: 1,
 			boxId: box?.boxId,
 			name: box?.name,
 		};
 
 		try {
-			await createPackage(payload);
+			await createPackage(orderId, payload);
+			await handleGetPackages();
 			setOpen(false);
 		} catch (err) {
 			console.log(err);
@@ -65,9 +65,26 @@ CreatePackagePropsType) => {
 		handleGetBoxes();
 	}, []);
 
+	useEffect(() => {
+		function handleResetForm() {
+			setSelectedBox('');
+		}
+
+		handleResetForm();
+	}, [open]);
+
 	return (
 		<>
-			<Button theme='accent' onPress={() => setOpen(true)}>
+			<Button
+				theme='accent'
+				onPress={() => setOpen(true)}
+				icon={
+					<MaterialCommunityIcons
+						name='package-variant'
+						size={18}
+						color='white'
+					/>
+				}>
 				Create Package
 			</Button>
 			<Sheet

@@ -1,4 +1,5 @@
 import {
+	deletePackage,
 	finishPackage,
 	removeLineItemFromPackage,
 	undoFinishPackage,
@@ -8,7 +9,6 @@ import Entypo from '@expo/vector-icons/Entypo';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { ChevronDown } from '@tamagui/lucide-icons';
-import { Link } from 'expo-router';
 import React, { useState } from 'react';
 import {
 	Accordion,
@@ -16,41 +16,71 @@ import {
 	Card,
 	H3,
 	Paragraph,
+	Separator,
 	SizableText,
 	Square,
+	XGroup,
 	XStack,
-	YGroup,
 	YStack,
 } from 'tamagui';
 import { AddLineItemToPackage } from './AddLineItemToPackage';
+import { AlertError } from './ui/./AlertError';
+import { StatusChip } from './ui/StatusChip';
 
 interface PackageItemPropsType {
 	_package: PackageType;
 	index: number;
+	handleGetPackages: () => void;
 }
 
-export const PackageItem = ({ _package, index }: PackageItemPropsType) => {
+export const PackageItem = ({
+	_package,
+	index,
+	handleGetPackages,
+}: PackageItemPropsType) => {
 	const [open, setOpen] = useState(false);
+	const [alert, setAlert] = useState(false);
+	const [error, setError] = useState({});
 
-	async function handleRemoveLineItemFromPackage(packageItemId: number) {
+	async function handleRemoveLineItemFromPackage(packageItemId: string) {
 		try {
 			await removeLineItemFromPackage(packageItemId);
+			await handleGetPackages();
 		} catch (err) {
 			console.log(err);
 		}
 	}
 
-	async function handleFinishPackage(packageId: number) {
+	async function handleFinishPackage() {
+		if (_package.items.length === 0) {
+			setError({
+				title: 'Error',
+				description: 'Package contains no items',
+			});
+			return setAlert(true);
+		}
+
 		try {
-			await finishPackage(packageId);
+			await finishPackage(_package.packageId);
+			await handleGetPackages();
 		} catch (err) {
 			console.log(err);
 		}
 	}
 
-	async function handleUndoFinishPackage(packageId: number) {
+	async function handleUndoFinishPackage() {
 		try {
-			await undoFinishPackage(packageId);
+			await undoFinishPackage(_package.packageId);
+			await handleGetPackages();
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
+	async function handleDeletePackage() {
+		try {
+			await deletePackage(_package.packageId);
+			await handleGetPackages();
 		} catch (err) {
 			console.log(err);
 		}
@@ -58,67 +88,80 @@ export const PackageItem = ({ _package, index }: PackageItemPropsType) => {
 
 	const OpenPackageButtons = () => {
 		return (
-			<YGroup flex={1}>
-				<Button
-					theme='accent'
-					icon={<Entypo name='circle-with-cross' size={16} color='white' />}>
-					Delete
-				</Button>
-				<Button
-					theme='accent'
-					icon={<Entypo name='circle-with-plus' size={16} color='white' />}
-					onPress={() => {
-						setOpen(true);
-					}}>
-					Add Item
-				</Button>
-				<Button
-					onPress={() => handleFinishPackage(_package.packageId)}
-					theme='accent'
-					icon={
-						<MaterialCommunityIcons
-							name='check-circle'
-							size={16}
-							color='white'
-						/>
-					}>
-					Finish
-				</Button>
-			</YGroup>
+			<XGroup>
+				<XGroup.Item>
+					<Button
+						minWidth={'33%'}
+						onPress={handleDeletePackage}
+						theme='accent'
+						icon={<Entypo name='circle-with-cross' size={16} color='white' />}>
+						Delete
+					</Button>
+				</XGroup.Item>
+				<Separator vertical />
+				<XGroup.Item>
+					<Button
+						minWidth={'33%'}
+						theme='accent'
+						icon={<Entypo name='circle-with-plus' size={16} color='white' />}
+						onPress={() => {
+							setOpen(true);
+						}}>
+						Add Item
+					</Button>
+				</XGroup.Item>
+				<Separator vertical />
+
+				<XGroup.Item>
+					<Button
+						minWidth={'33%'}
+						onPress={handleFinishPackage}
+						theme='accent'
+						icon={
+							<MaterialCommunityIcons
+								name='check-circle'
+								size={16}
+								color='white'
+							/>
+						}>
+						Finish
+					</Button>
+				</XGroup.Item>
+			</XGroup>
 		);
 	};
 
 	const PackedPackageButtons = () => {
 		return (
-			<YGroup flex={1}>
-				<Button
-					onPress={() => handleUndoFinishPackage(_package.packageId)}
-					theme='accent'
-					icon={<Ionicons name='arrow-undo-circle' size={16} color='white' />}>
-					Undo Finish
-				</Button>
-			</YGroup>
+			<Button
+				minWidth={'100%'}
+				onPress={handleUndoFinishPackage}
+				theme='accent'
+				icon={<Ionicons name='arrow-undo-circle' size={16} color='white' />}>
+				Undo Finish
+			</Button>
 		);
 	};
 
 	return (
 		<Card size='$5'>
-			<AddLineItemToPackage _package={_package} open={open} setOpen={setOpen} />
-			<YStack flex={1}>
-				<XStack>
-					<XStack flex={1}>
-						<Card.Header>
-							<H3>{_package.name}</H3>
-							<SizableText size='$4'>Package #{index + 1}</SizableText>
-							<SizableText size='$4'>Status: {_package?.status}</SizableText>
-						</Card.Header>
-					</XStack>
-					<XStack flex={1} justifyContent='center'>
-						{_package.status === 'Open' && <OpenPackageButtons />}
-						{_package.status === 'Packed' && <PackedPackageButtons />}
-					</XStack>
+			<AlertError open={alert} setOpen={setAlert} error={error} />
+			<AddLineItemToPackage
+				_package={_package}
+				index={index}
+				open={open}
+				setOpen={setOpen}
+				handleGetPackages={handleGetPackages}
+			/>
+			<Card.Header>
+				<XStack justifyContent='space-between'>
+					<YStack>
+						<H3>Package #{index + 1}</H3>
+						<SizableText theme='alt2'>{_package.name}</SizableText>
+					</YStack>
+					<StatusChip status={_package.status} />
 				</XStack>
-			</YStack>
+			</Card.Header>
 			<Accordion
 				overflow='hidden'
 				width='100%'
@@ -148,9 +191,7 @@ export const PackageItem = ({ _package, index }: PackageItemPropsType) => {
 									<XStack key={item.packageItemId} alignItems='center'>
 										<XStack gap={'$3'} flex={1}>
 											<SizableText>{item.name}</SizableText>
-											<SizableText>
-												Quantity: {item.quantityPackaged}
-											</SizableText>
+											<SizableText>Quantity: {item.quantity}</SizableText>
 										</XStack>
 										{_package.status === 'Open' && (
 											<XStack>
@@ -177,6 +218,12 @@ export const PackageItem = ({ _package, index }: PackageItemPropsType) => {
 					</Accordion.HeightAnimator>
 				</Accordion.Item>
 			</Accordion>
+			<Card.Footer>
+				<XStack flex={1}>
+					{_package.status === 'Open' && <OpenPackageButtons />}
+					{_package.status === 'Packed' && <PackedPackageButtons />}
+				</XStack>
+			</Card.Footer>
 		</Card>
 	);
 };
