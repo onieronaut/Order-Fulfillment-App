@@ -1,4 +1,4 @@
-import { PackageType } from '@/types';
+import { PackagedItemType, PackageType, ShipmentPackageType } from '@/types';
 import { openDatabase } from '../database';
 import {
 	getItem,
@@ -10,13 +10,19 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const getPackages = async (orderId: string) => {
 	const db = await openDatabase();
-	const packages: any[] = await db.getAllAsync(
+
+	const packages: PackageType[] = await db.getAllAsync(
 		'SELECT * FROM packages WHERE orderId = ?;',
 		[orderId]
 	);
 
-	const packagedItems: any[] = await db.getAllAsync(
+	const packagedItems: PackagedItemType[] = await db.getAllAsync(
 		'SELECT * from packagedItems WHERE orderId = ?;',
+		[orderId]
+	);
+
+	const shipmentPackages: ShipmentPackageType[] = await db.getAllAsync(
+		'SELECT * FROM shipmentPackages WHERE orderId = ?',
 		[orderId]
 	);
 
@@ -30,6 +36,10 @@ export const getPackages = async (orderId: string) => {
 					}
 				})
 				.filter((item) => item !== undefined),
+			shipmentPackageId:
+				shipmentPackages.find(
+					(shipmentPackage) => shipmentPackage.packageId === _package.packageId
+				)?.shipmentPackageId || '',
 		};
 	});
 
@@ -78,8 +88,13 @@ export const addLineItemToPackage = async (
 	orderId: string,
 	packageId: string,
 	itemId: string,
-	quantity: number
+	data: {
+		quantity: number;
+		name: string;
+	}
 ) => {
+	const { quantity, name } = data;
+
 	const db = await openDatabase();
 
 	const _package = await getPackage(packageId);
@@ -89,8 +104,6 @@ export const addLineItemToPackage = async (
 		const { packageItemId, quantity: currentQuantity } = _package.items.find(
 			(item) => item.itemId === itemId
 		);
-
-		const item = await getItem(itemId);
 		// @ts-ignore
 		const newQuantity = parseInt(quantity) + parseInt(currentQuantity);
 
@@ -98,12 +111,10 @@ export const addLineItemToPackage = async (
 			'UPDATE packageditems SET quantity = ? WHERE packageItemId = ?;',
 			[newQuantity, packageItemId]
 		);
-
-		console.log('item already here');
 	} else {
 		await db.runAsync(
-			'INSERT INTO packageditems (packageItemId, orderId, packageId, itemId, name, quantity) VALUES (?, ?, ?, ?, "x", ?);',
-			[uniqueId, orderId, packageId, itemId, quantity]
+			'INSERT INTO packageditems (packageItemId, orderId, packageId, itemId, name, quantity) VALUES (?, ?, ?, ?, ?, ?);',
+			[uniqueId, orderId, packageId, itemId, name, quantity]
 		);
 	}
 

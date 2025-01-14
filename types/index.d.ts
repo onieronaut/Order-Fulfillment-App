@@ -23,6 +23,7 @@ export type PackageType = {
 	packageId: string;
 	boxId: string;
 	orderId: string;
+	shipmentPackageId: string;
 	name: string;
 	status: 'Packed' | 'Shipped' | 'Open';
 	items: PackagedItemType[];

@@ -12,6 +12,7 @@ import {
 	Input,
 	Label,
 	Separator,
+	SizableText,
 	XStack,
 	YStack,
 } from 'tamagui';
@@ -36,6 +37,7 @@ export const AddLineItemToPackage = ({
 	const [position, setPosition] = React.useState(0);
 	const [order, setOrder] = useState<OrderType>();
 	const [selectedItem, setSelectedItem] = useState();
+	const [quantityAvailable, setQuantityAvailable] = useState(0);
 	const [quantity, setQuantity] = useState('');
 	const [alert, setAlert] = useState(false);
 	const [error, setError] = useState({});
@@ -51,7 +53,8 @@ export const AddLineItemToPackage = ({
 				title: 'Error',
 				description: 'No item selected',
 			});
-			return setAlert(true);
+			setAlert(true);
+			return false;
 		}
 
 		if (quantity === '') {
@@ -59,21 +62,38 @@ export const AddLineItemToPackage = ({
 				title: 'Error',
 				description: 'No quantity entered',
 			});
-			return setAlert(true);
+			setAlert(true);
+			return false;
 		}
+
+		if (parseInt(quantity) > quantityAvailable) {
+			setError({
+				title: 'Error',
+				description: 'Quantity selected exceeds available quantity',
+			});
+			setAlert(true);
+			return false;
+		}
+
+		return true;
 	}
 
 	async function handleAddLineItemToPackage() {
-		handleValidation();
+		if (!handleValidation()) return;
 
 		const item = order?.items.find((item) => item.itemId === selectedItem);
+
+		const data = {
+			quantity: parseInt(quantity),
+			name: item.name,
+		};
 
 		try {
 			await addLineItemToPackage(
 				_package.orderId,
 				_package.packageId,
 				item.itemId,
-				parseInt(quantity)
+				data
 			);
 			await handleGetPackages();
 
@@ -82,6 +102,14 @@ export const AddLineItemToPackage = ({
 			console.log(err);
 		}
 	}
+
+	useEffect(() => {
+		if (!selectedItem) return;
+
+		const item = order.items?.find((item) => item.itemId === selectedItem);
+
+		setQuantityAvailable(item?.quantity - item?.quantityPackaged);
+	}, [selectedItem]);
 
 	useEffect(() => {
 		if (!open) return;
@@ -162,6 +190,14 @@ export const AddLineItemToPackage = ({
 								onFocus={() => setSnapPoints(keypadSnapPoints)}
 								onBlur={() => setSnapPoints(initialSnapPoints)}
 							/>
+							{selectedItem && (
+								<>
+									<XStack>
+										<Label>Quantity Available:</Label>
+									</XStack>
+									<SizableText>{quantityAvailable}</SizableText>
+								</>
+							)}
 						</XStack>
 						<Separator marginVertical={5} />
 						<Button onPress={handleAddLineItemToPackage} theme='accent'>

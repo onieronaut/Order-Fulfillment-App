@@ -4,6 +4,7 @@ import { getPackages } from '../packages/database';
 import dayjs from 'dayjs';
 import { getOrder } from '../orders/database';
 import { v4 as uuidv4 } from 'uuid';
+import { getItems } from '../items/database';
 
 export const getShipments = async (orderId: string) => {
 	const db = await openDatabase();
@@ -19,30 +20,20 @@ export const getShipments = async (orderId: string) => {
 
 	const packages = await getPackages(orderId);
 
-	const newShipmentPackages = packages
-		.map((_package) => {
-			const matchedShipmentPackage = shipmentPackages.find(
-				(shipmentPackage) => shipmentPackage.packageId === _package.packageId
-			);
-
-			if (matchedShipmentPackage) {
-				return {
-					..._package,
-					shipmentId: matchedShipmentPackage.shipmentId,
-				};
-			}
-
-			return null;
-		})
-		.filter((item) => item !== null);
-
-	const payload = shipments.map((shipment) => {
+	const payload: ShipmentType[] = shipments.map((shipment) => {
 		return {
 			...shipment,
-			packages: newShipmentPackages
+			packages: shipmentPackages
 				.map((shipmentPackage) => {
 					if (shipmentPackage.shipmentId === shipment.shipmentId) {
-						return shipmentPackage;
+						const _package = packages.find(
+							(_package) => _package.packageId === shipmentPackage.packageId
+						);
+
+						return {
+							shipmentPackageId: shipmentPackage.shipmentPackageId,
+							..._package,
+						};
 					}
 				})
 				.filter((item) => item !== undefined),
@@ -70,17 +61,19 @@ export const addPackagesToShipment = async (
 	orderId: string,
 	data: { packageIds: string[] }
 ) => {
-	const uniqueId = uuidv4();
-
 	const { packageIds } = data;
 
 	const db = await openDatabase();
+
 	for (const packageId of packageIds) {
-		await db.runAsync(
+		const uniqueId = uuidv4();
+
+		const result = await db.runAsync(
 			'INSERT INTO shipmentPackages (shipmentPackageId, shipmentId, orderId, packageId) VALUES (?, ?, ?, ?);',
 			[uniqueId, shipmentId, orderId, packageId]
 		);
 	}
+
 	console.log('Packages added to shipment');
 	return;
 };
@@ -98,28 +91,62 @@ export const deleteShipment = async (shipmentId: string) => {
 	console.log('Shipment deleted');
 };
 
-export const shipShipment = async (shipment: ShipmentType) => {
-	const { shipmentId, packages } = shipment;
+export const shipShipment = async (data: { shipment: ShipmentType }) => {
+	const { shipment } = data;
 	const date = dayjs().unix() * 1000;
 
 	const db = await openDatabase();
 
+	const items = await getItems(shipment.orderId);
+	const shipments = await getShipments(shipment.orderId);
+
 	await db.runAsync(
 		'UPDATE shipments SET status = "Shipped", shippedAt = ? WHERE shipmentId = ?;',
-		[date, shipmentId]
+		[date, shipment.shipmentId]
 	);
 
-	for (const _package of packages) {
+	for (const _package of shipment.packages) {
 		await db.runAsync(
 			'UPDATE packages SET status = "Shipped" WHERE packageId = ?;',
 			[_package.packageId]
 		);
 
 		for (const item of _package.items) {
-			await db.runAsync(
-				'UPDATE items SET status = "Shipped" WHERE itemId = ?;',
-				[item.itemId]
+			const lineItem = items.find(
+				(lineItem) => lineItem.itemId === item.itemId
 			);
+
+			const itemQuantityInShipment = shipment.packages.reduce(
+				(acc, _package) =>
+					_package.items.find(
+						(packageItem) => packageItem.itemId === item.itemId
+					).quantity + acc,
+				0
+			);
+
+			const itemQuantityAlreadyShipped = shipments
+				.filter((shipment) => shipment.status === 'Shipped')
+				.reduce(
+					(acc, shipment) =>
+						acc +
+						shipment.packages.reduce(
+							(acc, _package) =>
+								acc +
+								_package.items.reduce((acc, item) => acc + item.quantity, 0),
+							0
+						),
+					0
+				);
+
+			const totalItemsShipped =
+				itemQuantityAlreadyShipped + itemQuantityInShipment;
+
+			if (lineItem.quantity === totalItemsShipped) {
+				await db.runAsync(
+					'UPDATE items SET status = "Shipped" WHERE itemId = ?;',
+					[item.itemId]
+				);
+			}
 		}
 	}
 

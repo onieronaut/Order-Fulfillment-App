@@ -49,8 +49,9 @@ export const ShipmentItem = ({
 	}
 
 	async function handleShipShipment() {
+		const data = { shipment };
 		try {
-			await shipShipment(shipment);
+			await shipShipment(data);
 			await handleGetShipments();
 		} catch (err) {
 			console.log(err);
@@ -119,8 +120,10 @@ export const ShipmentItem = ({
 		<Card size='$5'>
 			<AddPackagesToShipment
 				shipment={shipment}
+				index={index}
 				open={open}
 				setOpen={setOpen}
+				handleGetShipments={handleGetShipments}
 			/>
 
 			<Card.Header>
