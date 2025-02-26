@@ -1,6 +1,4 @@
-import { BoxType, LineItemType, OrderType } from '@/types';
 import * as SQLite from 'expo-sqlite';
-import { getPackage } from './packages/database';
 
 export const openDatabase = async () => {
 	return await SQLite.openDatabaseAsync('orders.db');
@@ -62,19 +60,10 @@ export const createTables = async () => {
         packageId TEXT NOT NULL,
         orderId TEXT NOT NULL
     );
-
-
     
     `
 		)
 		.catch((err) => console.log(err));
-
-	// INSERT INTO boxes (boxId, name) VALUES ('b2cbd40b-bc13-46e1-bfdd-92e6a5e53d8a','Small Box');
-	// INSERT INTO boxes (boxId, name) VALUES ('8130aa1f-d37d-4428-acfa-01175b75702d','Medium Box');
-	// INSERT INTO boxes (boxId, name) VALUES ('a26c19d8-3a6d-4d8a-8195-264bbb0c2348', 'Large Box');
-
-	// INSERT INTO orders (orderId, createdAt, status) VALUES ('4f442674-b846-489c-8efa-32932d8a283f','123456789','Pending');
-	// INSERT INTO items (itemId, name, quantity, orderId, quantityPackaged, status) VALUES ('c396d3e9-ba1e-45b6-94fe-a217fd6b2c99', 'Graphics Card', 5, '4f442674-b846-489c-8efa-32932d8a283f', 0, 'Pending');
 
 	console.log('Database Created');
 };
@@ -92,13 +81,4 @@ export const dropTables = async () => {
     `);
 
 	console.log('Tables deleted');
-};
-
-export const getBoxes = async () => {
-	const db = await openDatabase();
-	const boxes: BoxType[] = await db.getAllAsync('SELECT * FROM boxes;');
-
-	console.log('Boxes loaded');
-
-	return boxes;
 };

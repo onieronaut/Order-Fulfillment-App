@@ -4,6 +4,8 @@ import { GetOrderType } from '@/types/api';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import { getItems } from '../items/database';
+import { getRandomInt } from '@/utils/getRandomtInt';
+import { ITEMS } from '@/constants/items';
 
 export const getOrders = async () => {
 	const db = await openDatabase();
@@ -34,11 +36,25 @@ export const createOrder = async () => {
 	const uniqueId = uuidv4();
 	const date = dayjs().unix() * 1000;
 
+	const itemCount = getRandomInt(1, 5);
+
 	const db = await openDatabase();
 	await db.runAsync(
 		'INSERT INTO orders (orderId, createdAt, status) VALUES (?, ?, "Pending");',
 		[uniqueId, date]
 	);
+
+	for (let i = 0; i < itemCount; i++) {
+		const itemId = uuidv4();
+		const itemQuantity = getRandomInt(1, 10);
+
+		await db.runAsync(
+			`
+		INSERT INTO items (itemId, name, quantity, orderId, quantityPackaged, status) VALUES (?, ?, ?, ?, 0, 'Pending');
+		`,
+			[itemId, ITEMS[i], itemQuantity, uniqueId]
+		);
+	}
 
 	console.log('Order created');
 	return;

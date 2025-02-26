@@ -15,8 +15,8 @@ import {
 } from 'tamagui';
 import { SelectBox } from './ui/SelectBox';
 import { useRouter } from 'expo-router';
-import { getBoxes } from '@/db/database';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { getBoxes } from '@/db/boxes/database';
 
 interface CreatePackagePropsType {
 	orderId: string;

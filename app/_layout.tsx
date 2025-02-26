@@ -11,13 +11,13 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { createTables, dropTables } from '@/db/database';
-import { createOrder } from '@/db/orders/database';
 import { useColorScheme } from 'react-native';
 // import { createTamagui, createTokens, TamaguiProvider } from 'tamagui';
 import { PortalProvider, TamaguiProvider } from 'tamagui';
 import 'react-native-get-random-values';
 
 import tamaguiConfig from '@/tamagui.config';
+import { createBox, getBoxes } from '@/db/boxes/database';
 
 // import '@tamagui/core/reset.css';
 // import { config } from '@/tamagui.config';
@@ -43,11 +43,24 @@ export default function RootLayout() {
 		...FontAwesome.font,
 	});
 
+	async function handleInitializeBoxes() {
+		const boxes = await getBoxes();
+
+		if (boxes.length > 0) return;
+		else {
+			await createBox('Small Box');
+			await createBox('Medium Box');
+			await createBox('Large Box');
+			console.log('Boxes initialized');
+		}
+	}
+
 	useEffect(() => {
 		const prepare = async () => {
 			try {
 				// await dropTables();
 				await createTables();
+				await handleInitializeBoxes();
 			} catch (err) {
 				console.warn(err);
 			}
@@ -75,15 +88,6 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
 	const colorScheme = useColorScheme();
-
-	async function handleCreateOrder() {
-		try {
-			const result = await createOrder();
-			console.log(result);
-		} catch (err) {
-			console.log(err);
-		}
-	}
 
 	return (
 		<TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme!}>

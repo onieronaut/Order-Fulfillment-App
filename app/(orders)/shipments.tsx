@@ -6,7 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { FlatList } from 'react-native';
-import { Button, YStack } from 'tamagui';
+import { Button, H3, YStack } from 'tamagui';
 
 export default function ShipScreen() {
 	const { orderId } = useGlobalSearchParams<{
@@ -47,6 +47,7 @@ export default function ShipScreen() {
 
 	return (
 		<YStack flex={1} padding={10}>
+			{shipments.length === 0 && <H3 textAlign='center'>No Shipments Exist</H3>}
 			<FlatList
 				data={shipments}
 				keyExtractor={(item) => item.shipmentId.toString()}
@@ -60,10 +61,7 @@ export default function ShipScreen() {
 					</YStack>
 				)}
 			/>
-			<YStack
-				backgroundColor={'$background075'}
-				height={'10%'}
-				justifyContent='center'>
+			<YStack height={'10%'} justifyContent='center'>
 				<Button
 					theme='accent'
 					onPress={handleCreateShipment}

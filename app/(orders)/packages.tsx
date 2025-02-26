@@ -5,7 +5,7 @@ import { PackageType } from '@/types';
 import { useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { FlatList } from 'react-native';
-import { YStack } from 'tamagui';
+import { H3, Text, YStack } from 'tamagui';
 
 export default function PackagesScreen() {
 	const { orderId } = useGlobalSearchParams<{ orderId: string }>();
@@ -33,6 +33,7 @@ export default function PackagesScreen() {
 
 	return (
 		<YStack flex={1} padding={10}>
+			{packages.length === 0 && <H3 textAlign='center'>No Packages Exist</H3>}
 			<FlatList
 				data={packages}
 				keyExtractor={(item) => `${item.packageId}`}
@@ -46,10 +47,7 @@ export default function PackagesScreen() {
 					</YStack>
 				)}
 			/>
-			<YStack
-				backgroundColor={'$background075'}
-				height={'10%'}
-				justifyContent='center'>
+			<YStack height={'10%'} justifyContent='center'>
 				<CreatePackage
 					orderId={orderId}
 					handleGetPackages={handleGetPackages}
