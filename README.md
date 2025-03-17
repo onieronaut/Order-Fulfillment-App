@@ -46,10 +46,11 @@ Start the server
 
 In the output, you'll find options to open the app in a
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
 - [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
 - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
 - [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+
+- Please note the current iteration of this application will only function using Expo Go or a mobile device simulator due to the use of `expo-sqlite`. The web application version is not supported.
 
 ## Optimizations
 
@@ -60,3 +61,4 @@ Future optimizations include:
 - Interacting with a shipping API to integrate tracking data on shipments
 - Adding a pickup shipment option
 - Extending the status management system to be more detailed
+- Add support for web application by implementing local storage usage
